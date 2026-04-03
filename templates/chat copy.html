@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Research Study — Advisor Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --border: #e2e0da;
+      --text: #1a1a1a;
+      --text-muted: #6b6760;
+      --accent: {% if source_type == 'human' %}#2d6a4f{% else %}#1d3557{% endif %};
+      --accent-light: {% if source_type == 'human' %}#d8f3dc{% else %}#dde8f5{% endif %};
+      --user-bg: #1a1a1a;
+      --user-text: #ffffff;
+      --advisor-bg: var(--surface);
+      --radius: 16px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .study-header {
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .study-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Scenario Card */
+    .scenario-card {
+      width: 100%;
+      max-width: 720px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .scenario-card h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .scenario-card .scenario-text {
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: #3a3a3a;
+      white-space: pre-line;
+    }
+
+    /* Source label */
+    .source-label {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .source-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .source-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      background: var(--accent);
+      color: white;
+      flex-shrink: 0;
+    }
+
+    /* Chat Container */
+    .chat-container {
+      width: 100%;
+      max-width: 720px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 320px;
+      max-height: 420px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: flex;
+      gap: 10px;
+      max-width: 88%;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message.advisor {
+      align-self: flex-start;
+    }
+
+    .message-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .message.user .message-avatar {
+      background: #1a1a1a;
+    }
+
+    .bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+
+    .message.user .bubble {
+      background: var(--user-bg);
+      color: var(--user-text);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.advisor .bubble {
+      background: var(--accent-light);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Typing indicator */
+    .typing {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 12px 16px;
+      background: var(--accent-light);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+    }
+
+    .typing span {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: bounce 1.2s infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* Turn counter */
+    .turn-bar {
+      padding: 10px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafaf8;
+    }
+
+    .turn-counter {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .turn-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .turn-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .turn-dot.used { background: var(--accent); }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--surface);
+    }
+
+    textarea {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 15px;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.2s;
+      min-height: 44px;
+      max-height: 120px;
+    }
+
+    textarea:focus { border-color: var(--accent); }
+    textarea:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    button#send-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    button#send-btn:hover { opacity: 0.88; }
+    button#send-btn:active { transform: scale(0.97); }
+    button#send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* End state */
+    .end-notice {
+      text-align: center;
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+      background: #fafaf8;
+    }
+
+    .end-notice p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .survey-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 11px 28px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .survey-btn:hover { opacity: 0.88; }
+
+    .instructions {
+      width: 100%;
+      max-width: 720px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: #78350f;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="study-header">
+    <p>Research Study — Confidential</p>
+  </div>
+
+  <!-- Scenario -->
+  <div class="scenario-card">
+    <h2>{{ scenario_title }}</h2>
+    <div class="scenario-text">{{ scenario_text }}</div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <strong>Instructions:</strong> Please describe the situation from your point of view. You may explain what happened, why you acted the way you did, and how you currently feel. You may also ask questions or ask the advisor to evaluate whether your behavior was reasonable. You have up to <strong>6 rounds</strong> of interaction.
+  </div>
+
+  <!-- Source label -->
+  <div class="source-label">
+    <div class="source-badge">
+      {% if source_type == 'human' %}
+        👤 Human Advisor — Sarah
+      {% else %}
+        🤖 Objective AI Advisor
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-container">
+    <div class="chat-messages" id="messages">
+      <!-- Intro message -->
+      <div class="message advisor">
+        <div class="message-avatar">{% if source_type == 'human' %}S{% else %}AI{% endif %}</div>
+        <div class="bubble">{{ intro_message }}</div>
+      </div>
+    </div>
+
+    <!-- Turn bar -->
+    <div class="turn-bar">
+      <span class="turn-counter">Turns used: <span id="turn-count">0</span> / 6</span>
+      <div class="turn-dots" id="turn-dots">
+        {% for i in range(6) %}<div class="turn-dot" id="dot-{{ i }}"></div>{% endfor %}
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area" id="input-area">
+      <textarea id="user-input" rows="1" placeholder="Describe the situation or ask a question…"></textarea>
+      <button id="send-btn">Send</button>
+    </div>
+
+    <!-- End notice (hidden initially) -->
+    <div class="end-notice" id="end-notice" style="display:none;">
+      <p>You have completed all 6 rounds of interaction. Please proceed to the survey.</p>
+      <a href="#survey" class="survey-btn">Continue to Survey →</a>
+    </div>
+  </div>
+
+  <script>
+    const CONDITION = "{{ condition }}";
+    const SCENARIO  = "{{ scenario_id }}";
+    const SOURCE    = "{{ source_type }}";
+    const MAX_TURNS = {{ max_turns }};
+
+    let sessionId = null;
+    let turnCount = 0;
+    let isWaiting = false;
+
+    const messagesEl  = document.getElementById("messages");
+    const inputEl     = document.getElementById("user-input");
+    const sendBtn     = document.getElementById("send-btn");
+    const turnCountEl = document.getElementById("turn-count");
+    const endNotice   = document.getElementById("end-notice");
+    const inputArea   = document.getElementById("input-area");
+
+    // Init session on load
+    async function initSession() {
+      const res = await fetch("/api/init-session", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
+      });
+      const data = await res.json();
+      sessionId = data.session_id;
+    }
+
+    function scrollBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function addMessage(role, text) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${role}`;
+
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.textContent = role === "user" ? "You" : (SOURCE === "human" ? "S" : "AI");
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      scrollBottom();
+    }
+
+    function showTyping() {
+      const wrapper = document.createElement("div");
+      wrapper.className = "message advisor";
+      wrapper.id = "typing-indicator";
+
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.textContent = SOURCE === "human" ? "S" : "AI";
+
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.innerHTML = "<span></span><span></span><span></span>";
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(typing);
+      messagesEl.appendChild(wrapper);
+      scrollBottom();
+    }
+
+    function removeTyping() {
+      const el = document.getElementById("typing-indicator");
+      if (el) el.remove();
+    }
+
+    function updateTurnUI(count) {
+      turnCountEl.textContent = count;
+      for (let i = 0; i < MAX_TURNS; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) dot.classList.toggle("used", i < count);
+      }
+    }
+
+    function showEndState() {
+      inputArea.style.display = "none";
+      endNotice.style.display = "block";
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text || isWaiting || !sessionId) return;
+
+      isWaiting = true;
+      sendBtn.disabled = true;
+      inputEl.disabled = true;
+
+      addMessage("user", text);
+      inputEl.value = "";
+
+      // Typing delay: human condition feels more natural with longer delay
+      const delay = SOURCE === "human" ? 1500 + Math.random() * 500 : 400;
+      await new Promise(r => setTimeout(r, delay));
+      showTyping();
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({message: text, session_id: sessionId}),
+        });
+        const data = await res.json();
+        removeTyping();
+
+        if (data.reply) {
+          addMessage("advisor", data.reply);
+          turnCount = data.turn_count;
+          updateTurnUI(turnCount);
+        }
+
+        if (data.limit_reached) {
+          showEndState();
+        }
+      } catch (err) {
+        removeTyping();
+        addMessage("advisor", "Sorry, something went wrong. Please try again.");
+      } finally {
+        isWaiting = false;
+        if (!endNotice.style.display || endNotice.style.display === "none") {
+          sendBtn.disabled = false;
+          inputEl.disabled = false;
+          inputEl.focus();
+        }
+      }
+    }
+
+    // Auto-resize textarea
+    inputEl.addEventListener("input", () => {
+      inputEl.style.height = "auto";
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+    });
+
+    // Send on Enter (Shift+Enter for newline)
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    initSession();
+  </script>
+</body>
+</html>
