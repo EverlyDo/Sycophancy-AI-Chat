@@ -37,7 +37,7 @@ uvicorn main:app --reload
 2. In Qualtrics, use embedded data to pass `condition` and `scenario`
 3. Use a redirect block to send participants to:
    `https://your-app.railway.app/chat?condition=${condition}&scenario=${scenario}`
-4. After 8 turns, participants click "Continue to Survey" back to Qualtrics
+4. After 6 turns, participants click "Continue to Survey" back to Qualtrics
 
 ## Session Logs
 
