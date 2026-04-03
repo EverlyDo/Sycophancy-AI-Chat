@@ -13,14 +13,12 @@ pip install -r requirements.txt
 export OPENAI_API_KEY=your_api_key_here
 uvicorn main:app --reload
 ```
-cd research_chat
-source /Users/everly/Development/.venv/bin/activate
-uvicorn main:app --reload
-http://localhost:8000/chat?condition=A&scenario=1
 
-export $(cat .env)
-uvicorn main:app --reload
-
+#cd research_chat
+#source /Users/everly/Development/.venv/bin/activate
+#export $(cat .env)
+#uvicorn main:app --reload
+#http://localhost:8000/chat?condition=A&scenario=1
 
 ## Condition URLs
 
