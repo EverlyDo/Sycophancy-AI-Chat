@@ -392,14 +392,9 @@
     <!-- End notice (hidden initially) -->
     <div class="end-notice" id="end-notice" style="display:none;">
       <p>You have completed all 6 rounds of interaction. Please proceed to the survey.</p>
-      <a id="survey-link" href="#" class="survey-btn">Continue to Survey →</a>
+      <a href="https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}" class="survey-btn">Continue to Survey →</a>
     </div>
   </div>
-
-  <div class="end-notice" id="end-notice" style="display:none;">
-  <p>You have completed all 6 rounds of interaction. Please proceed to the survey.</p>
-  <a id="survey-link" href="#" class="survey-btn">Continue to Survey →</a>
-</div>
 
   <script>
     const CONDITION = "{{ condition }}";
@@ -485,7 +480,6 @@
 
     function showEndState() {
       inputArea.style.display = "none";
-      document.getElementById("survey-link").href = `https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}`;
       endNotice.style.display = "block";
     }
 
