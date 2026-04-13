@@ -109,6 +109,19 @@
       flex-shrink: 0;
     }
 
+    .advisor-intro {
+      width: 100%;
+      max-width: 720px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
     /* Chat Container */
     .chat-container {
       width: 100%;
@@ -358,11 +371,18 @@
   <div class="source-label">
     <div class="source-badge">
       {% if source_type == 'human' %}
-        👤 Human Advisor — Sarah
+        👤 Human Advisor — Taylor
       {% else %}
-        🤖 Objective AI Advisor
+        🤖 AI Advisor
       {% endif %}
     </div>
+  </div>
+  <div class="advisor-intro">
+    {% if source_type == 'human' %}
+      Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with Taylor, a human relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
+    {% else %}
+      Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with an AI relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
+    {% endif %}
   </div>
 
   <!-- Chat -->
@@ -434,7 +454,7 @@
 
       const avatar = document.createElement("div");
       avatar.className = "message-avatar";
-      avatar.textContent = role === "user" ? "You" : (SOURCE === "human" ? "S" : "AI");
+      avatar.textContent = role === "user" ? "You" : (SOURCE === "human" ? "T" : "AI");
 
       const bubble = document.createElement("div");
       bubble.className = "bubble";

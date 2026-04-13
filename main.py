@@ -48,7 +48,7 @@ SCENARIOS = {
             "Imagine that you organized a small dinner with a few close friends. "
             "You did not invite one of your friends because you felt the group size was limited "
             "and the conversation would be more comfortable without them. Later, that friend found out "
-            "about the dinner and seemed hurt. He or she told you that felt excluded and embarrassed. "
+            "about the dinner and seemed hurt. They told you that they felt excluded and embarrassed. "
             "You think you had practical reasons for keeping the gathering small, but you are also unsure "
             "whether you handled the situation unfairly.\n\n"
             "Please imagine that this situation happened to you. You are now seeking advice about whether "
@@ -65,13 +65,15 @@ SCENARIOS = {
             "to the kitchen. A new message appears on the lock screen from someone whose name you do not recognize, "
             "saying, \"Last night was really fun.\"\n\n"
             "You immediately feel uneasy. You tell yourself that there may be an innocent explanation, but you also "
-            "feel that your partner's recent behavior has made you suspicious. While he or she is still in the kitchen, "
+            "feel that your partner's recent behavior has made you suspicious. While your partner is still in the kitchen, "
             "you pick up the phone and look at a few recent messages. Later, your partner realizes that you looked "
-            "through his or her phone and becomes upset, and criticize you that checking phone without permission "
-            "was a violation of trust and privacy.\n\n"
+            "through their phone and becomes upset, criticizing you for checking their phone without permission "
+            "and saying it was a violation of trust and privacy.\n\n"
             "You feel torn. On the one hand, you believe your concern did not come out of nowhere and that you had "
             "reasons to feel uncomfortable. On the other hand, you can also see why your partner feels that you crossed a line.\n\n"
-            "You are now wondering whether your behavior was understandable or whether you acted wrongly."
+            "You are now wondering whether your behavior was understandable or whether you acted wrongly.\n\n"
+            "Please imagine that this situation happened to you. You are now seeking advice about whether "
+            "your decision was reasonable and how you should think about what happened."
         ),
     },
 }
@@ -115,8 +117,8 @@ Keep responses conversational and 3-5 sentences.""",
 }
 
 INTRODUCTIONS = {
-    "human": "Hi, I'm Sarah, a relationship advisor with experience helping people think through interpersonal conflicts and emotionally complicated situations. How can I help you today?",
-    "ai": "Hi, I'm an AI relationship advisor designed to provide objective, neutral, and thoughtful guidance on interpersonal conflicts and emotionally complicated situations. How can I help you today?",
+    "human": "How can I help you today?",
+    "ai": "How can I help you today?",
 }
 
 # In-memory session store (DB later) 

@@ -1,4 +1,4 @@
-# Research Chat App
+# Sycophancy AI Chat
 
 ## Setup
 
@@ -6,19 +6,20 @@
 pip install -r requirements.txt
 ```
 
+## Environment Variables
+
+Create a `.env` file in the project root:
+<!-- GEMINI_API_KEY=your_api_key_here -->
+OPENAI_API_KEY=your_openai_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+
 ## Run
 
 ```bash
-# export GEMINI_API_KEY=your_api_key_here
-export OPENAI_API_KEY=your_api_key_here
+export $(cat .env)
 uvicorn main:app --reload
 ```
-
-#cd research_chat
-#source /Users/everly/Development/.venv/bin/activate
-#export $(cat .env)
-#uvicorn main:app --reload
-#http://localhost:8000/chat?condition=A&scenario=1
 
 ## Condition URLs
 
@@ -31,14 +32,33 @@ uvicorn main:app --reload
 
  `&scenario=2` for the second scenario.
 
+## Deployment
+
+Deployed on Railway. Environment variables must be set in Railway dashboard under Variables tab.
+
+uvicorn main:app --host 0.0.0.0 --port $PORT
+
 ## Qualtrics Integration
 
-1. Deploy to Railway
-2. In Qualtrics, use embedded data to pass `condition` and `scenario`
-3. Use a redirect block to send participants to:
-   `https://your-app.railway.app/chat?condition=${condition}&scenario=${scenario}`
-4. After 6 turns, participants click "Continue to Survey" back to Qualtrics
+Participants are redirected from the chat interface to Qualtrics after completing 6 turns. Session ID is passed via URL parameter for data linkage: https://your-qualtrics-url?session_id=${sessionId}
 
-## Session Logs
+Qualtrics Survey Flow includes `session_id` as embedded data set from URL.
 
-Sessions are stored in memory. Replace `sessions = {}` in `main.py` with Supabase or Google Sheets for persistent storage.
+## Data Storage
+
+Chat session logs are stored in Supabase (`sessions` table) including:
+- session_id
+- condition
+- scenario
+- source_type
+- sycophancy
+- turn_count
+- history (full conversation log)
+- created_at
+
+Survey response data is stored in Qualtrics and linked to chat data via `session_id`.
+
+## SONA Integration (pending)
+
+Random assignment endpoint `/assign` to be implemented after pilot testing. SONA URL will use: https://your-app.railway.app/assign?sona_id=%SURVEY_CODE%
+
