@@ -1,4 +1,4 @@
-# Research Chat App
+# Sycophancy AI Chat
 
 ## Setup
 
@@ -6,19 +6,20 @@
 pip install -r requirements.txt
 ```
 
+## Environment Variables
+
+Create a `.env` file in the project root:
+# export GEMINI_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_openai_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+
 ## Run
 
 ```bash
-# export GEMINI_API_KEY=your_api_key_here
-export OPENAI_API_KEY=your_api_key_here
+export $(cat .env)
 uvicorn main:app --reload
 ```
-
-#cd research_chat
-#source /Users/everly/Development/.venv/bin/activate
-#export $(cat .env)
-#uvicorn main:app --reload
-#http://localhost:8000/chat?condition=A&scenario=1
 
 ## Condition URLs
 
