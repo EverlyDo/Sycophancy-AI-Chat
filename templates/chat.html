@@ -74,6 +74,18 @@
       white-space: pre-line;
     }
 
+    /* Animation */
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+      
+
     /* Source label */
     .source-label {
       width: 100%;
@@ -357,13 +369,13 @@
   </div>
 
   <!-- Scenario -->
-  <div class="scenario-card">
+  <div class="scenario-card fade-in" style="animation-delay: 0.3s;">
     <h2>{{ scenario_title }}</h2>
     <div class="scenario-text">{{ scenario_text }}</div>
   </div>
 
   <!-- Instructions -->
-  <div class="instructions">
+  <div class="instructions fade-in" style="animation-delay: 0.8s;">
     <strong>Instructions:</strong> Please describe the situation from your point of view. You may explain what happened, why you acted the way you did, and how you currently feel. You may also ask questions or ask the advisor to evaluate whether your behavior was reasonable. You have up to <strong>6 rounds</strong> of interaction.
   </div>
 
@@ -377,7 +389,7 @@
       {% endif %}
     </div>
   </div>
-  <div class="advisor-intro">
+  <div class="advisor-intro fade-in" style="animation-delay: 1.4s;">
     {% if source_type == 'human' %}
       Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with Taylor, a human relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
     {% else %}
@@ -386,13 +398,13 @@
   </div>
 
   <!-- Chat -->
-  <div class="chat-container">
+  <div class="chat-container fade-in" style="animation-delay: 2.0s;">
     <div class="chat-messages" id="messages">
       <!-- Intro message -->
-      <div class="message advisor">
+      <!-- <div class="message advisor">
         <div class="message-avatar">{% if source_type == 'human' %}S{% else %}AI{% endif %}</div>
         <div class="bubble">{{ intro_message }}</div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Turn bar -->
@@ -421,6 +433,7 @@
     const SCENARIO  = "{{ scenario_id }}";
     const SOURCE    = "{{ source_type }}";
     const MAX_TURNS = {{ max_turns }};
+    const INTRO_MESSAGE = "{{ intro_message }}";
 
     let sessionId = null;
     let turnCount = 0;
@@ -442,6 +455,15 @@
       });
       const data = await res.json();
       sessionId = data.session_id;
+
+      // typing indicator after 2.5 sec
+      await new Promise(r => setTimeout(r, 2500));
+      showTyping();
+
+      // showing intro after 1.5 sec
+      await new Promise(r => setTimeout(r, 1500));
+      removeTyping();
+      addMessage("advisor", INTRO_MESSAGE);
     }
 
     function scrollBottom() {
@@ -473,7 +495,7 @@
 
       const avatar = document.createElement("div");
       avatar.className = "message-avatar";
-      avatar.textContent = SOURCE === "human" ? "S" : "AI";
+      avatar.textContent = SOURCE === "human" ? "T" : "AI";
 
       const typing = document.createElement("div");
       typing.className = "typing";
