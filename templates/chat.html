@@ -555,6 +555,14 @@
           addMessage("advisor", INTRO_MESSAGE);
         }
 
+        function startChat() {
+          document.getElementById("stage1").style.display = "none";
+          document.getElementById("stage2").style.display = "flex";
+          document.getElementById("stage2").style.flexDirection = "column";
+          document.getElementById("stage2").style.alignItems = "center";
+          initSession();
+        }
+
         function scrollBottom() {
           messagesEl.scrollTop = messagesEl.scrollHeight;
         }
