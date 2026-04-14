@@ -370,12 +370,10 @@
     <div
       id="stage1"
       style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        display: block;
         min-height: 100vh;
-        padding: 24px;
+        padding: 60px 24px 24px 24px;
+        box-sizing: border-box;
       "
     >
       <div
@@ -384,7 +382,7 @@
           animation-delay: 0.3s;
           max-width: 780px;
           width: 100%;
-          margin-bottom: 20px;
+          margin: 0 auto 20px auto;
           text-align: left;
         "
       >
@@ -404,7 +402,7 @@
           animation-delay: 1s;
           max-width: 780px;
           width: 100%;
-          margin-bottom: 20px;
+          margin: 0 auto 20px auto;
           text-align: left;
         "
       >
@@ -414,11 +412,28 @@
         </p>
       </div>
 
-      <!-- Advisor Profile Card -->
+      <!-- Connecting indicator -->
       <div
+        id="connecting"
         class="fade-in"
         style="
-          animation-delay: 1.8s;
+          animation-delay: 1.3s;
+          max-width: 780px;
+          width: 100%;
+          margin: 0 auto 20px auto;
+          text-align: left;
+        "
+      >
+        <p style="font-size: 14px; color: var(--text-muted)">
+          Connecting<span id="dots"></span>
+        </p>
+      </div>
+
+      <!-- Advisor Profile Card -->
+      <div
+        id="profile-card"
+        style="
+          visibility: hidden;
           max-width: 780px;
           width: 100%;
           margin-bottom: 24px;
@@ -508,9 +523,9 @@
 
       <!-- Instructions box + button -->
       <div
-        class="fade-in"
+        id="instructions-box"
         style="
-          animation-delay: 3s;
+          visibility: hidden;
           max-width: 780px;
           width: 100%;
           background: var(--surface);
@@ -632,198 +647,231 @@
             You have completed all 6 rounds of interaction. Please proceed to
             the survey.
           </p>
-          <a
-            href="https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}"
-            class="survey-btn"
+          <a id="survey-link" href="#" class="survey-btn"
             >Continue to Survey →</a
           >
         </div>
       </div>
+    </div>
 
-      <script>
-        const CONDITION = "{{ condition }}";
-        const SCENARIO  = "{{ scenario_id }}";
-        const SOURCE    = "{{ source_type }}";
-        const MAX_TURNS = {{ max_turns }};
-        const INTRO_MESSAGE = "{{ intro_message }}";
+    <script>
+      const CONDITION = "{{ condition }}";
+      const SCENARIO  = "{{ scenario_id }}";
+      const SOURCE    = "{{ source_type }}";
+      const MAX_TURNS = {{ max_turns }};
+      const INTRO_MESSAGE = "{{ intro_message }}";
 
-        let sessionId = null;
-        let turnCount = 0;
-        let isWaiting = false;
+      // Connecting dots animation
+      let dotCount = 0;
+      const dotsEl = document.getElementById("dots");
+      const dotInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        dotsEl.textContent = ".".repeat(dotCount);
+      }, 400);
 
-        const messagesEl  = document.getElementById("messages");
-        const inputEl     = document.getElementById("user-input");
-        const sendBtn     = document.getElementById("send-btn");
-        const turnCountEl = document.getElementById("turn-count");
-        const endNotice   = document.getElementById("end-notice");
-        const inputArea   = document.getElementById("input-area");
+      setTimeout(() => {
+        clearInterval(dotInterval);
+        document.getElementById("connecting").style.display = "none";
+        const card = document.getElementById("profile-card");
+        card.style.visibility = "visible";
+        card.classList.add("fade-in");
 
-        // Init session on load
-        async function initSession() {
-          const res = await fetch("/api/init-session", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
-          });
-          const data = await res.json();
-          sessionId = data.session_id;
+        const instructions = document.getElementById("instructions-box");
+        setTimeout(() => {
+          instructions.style.visibility = "visible";
+          instructions.classList.add("fade-in");
+        }, 800);
+      }, SOURCE === "human" ? 5500 : 4500);
 
-          // Interaction for typing indicator
-          await new Promise(r => setTimeout(r, 3500));
-          showTyping();
+      let sessionId = null;
+      let turnCount = 0;
+      let isWaiting = false;
+      let messagesEl, inputEl, sendBtn, turnCountEl, endNotice, inputArea;
 
-          // Interaction for showing intro
-          const introDelay = SOURCE === "human" ? 3000 + Math.random() * 1000 : 1500;
-          await new Promise(r => setTimeout(r, introDelay));
-          removeTyping();
-          addMessage("advisor", INTRO_MESSAGE);
-        }
+      // Init session on load
+      async function initSession() {
+        const res = await fetch("/api/init-session", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
+        });
+        const data = await res.json();
+        sessionId = data.session_id;
 
-        function startChat() {
-          document.getElementById("stage1").style.display = "none";
-          document.getElementById("stage2").style.display = "flex";
-          document.getElementById("stage2").style.flexDirection = "column";
-          document.getElementById("stage2").style.alignItems = "center";
-          initSession();
-        }
+        // Interaction for typing indicator
+        await new Promise(r => setTimeout(r, 3500));
+        showTyping();
 
-        function scrollBottom() {
-          messagesEl.scrollTop = messagesEl.scrollHeight;
-        }
+        // Interaction for showing intro
+        const introDelay = SOURCE === "human" ? 3000 + Math.random() * 1000 : 1500;
+        await new Promise(r => setTimeout(r, introDelay));
+        removeTyping();
+        addMessage("advisor", INTRO_MESSAGE);
+      }
 
-        function addMessage(role, text) {
-          const wrapper = document.createElement("div");
-          wrapper.className = `message ${role}`;
+      function startChat() {
+        document.getElementById("stage1").style.display = "none";
+        document.getElementById("stage2").style.display = "flex";
+        document.getElementById("stage2").style.flexDirection = "column";
+        document.getElementById("stage2").style.alignItems = "center";
 
-          const avatar = document.createElement("div");
-          avatar.className = "message-avatar";
-          if (role === "user") {
-            avatar.textContent = "You";
-          } else if (SOURCE === "human") {
-            avatar.textContent = "T";
-          } else {
-            avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-          }
+        messagesEl  = document.getElementById("messages");
+        inputEl     = document.getElementById("user-input");
+        sendBtn     = document.getElementById("send-btn");
+        turnCountEl = document.getElementById("turn-count");
+        endNotice   = document.getElementById("end-notice");
+        inputArea   = document.getElementById("input-area");
 
-          const bubble = document.createElement("div");
-          bubble.className = "bubble";
-          bubble.textContent = text;
-
-          wrapper.appendChild(avatar);
-          wrapper.appendChild(bubble);
-          messagesEl.appendChild(wrapper);
-          scrollBottom();
-        }
-
-        function showTyping() {
-          const wrapper = document.createElement("div");
-          wrapper.className = "message advisor";
-          wrapper.id = "typing-indicator";
-
-          const avatar = document.createElement("div");
-          avatar.className = "message-avatar";
-          if (SOURCE === "human") {
-            avatar.textContent = "T";
-          } else {
-            avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-          }
-          const typing = document.createElement("div");
-          typing.className = "typing";
-          typing.innerHTML = "<span></span><span></span><span></span>";
-
-          wrapper.appendChild(avatar);
-          wrapper.appendChild(typing);
-          messagesEl.appendChild(wrapper);
-          scrollBottom();
-        }
-
-        function removeTyping() {
-          const el = document.getElementById("typing-indicator");
-          if (el) el.remove();
-        }
-
-        function updateTurnUI(count) {
-          turnCountEl.textContent = count;
-          for (let i = 0; i < MAX_TURNS; i++) {
-            const dot = document.getElementById(`dot-${i}`);
-            if (dot) dot.classList.toggle("used", i < count);
-          }
-        }
-
-        function showEndState() {
-          inputArea.style.display = "none";
-          endNotice.style.display = "block";
-        }
-
-        async function sendMessage() {
-          const text = inputEl.value.trim();
-          if (!text || isWaiting || !sessionId) return;
-
-          isWaiting = true;
-          sendBtn.disabled = true;
-          inputEl.disabled = true;
-
-          addMessage("user", text);
-          inputEl.value = "";
-          turnCount += 1;
-          updateTurnUI(turnCount);
-
-          // Typing delay: human condition feels more natural with longer delay
-          //const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
-          //await new Promise(r => setTimeout(r, delay));
-          showTyping();
-
-          try {
-            const res = await fetch("/api/chat", {
-              method: "POST",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({message: text, session_id: sessionId}),
-            });
-            const data = await res.json();
-
-            if (SOURCE === "human") {
-              const typingTime = 4000 + Math.random() * 3000;
-              await new Promise(r => setTimeout(r, typingTime));
-            }
-
-            removeTyping();
-
-            if (data.reply) {
-              addMessage("advisor", data.reply);
-            }
-
-            if (data.limit_reached) {
-              showEndState();
-            }
-          } catch (err) {
-            removeTyping();
-            addMessage("advisor", "Sorry, something went wrong. Please try again.");
-          } finally {
-            isWaiting = false;
-            if (!endNotice.style.display || endNotice.style.display === "none") {
-              sendBtn.disabled = false;
-              inputEl.disabled = false;
-              inputEl.focus();
-            }
-          }
-        }
-
-        // Auto-resize textarea
         inputEl.addEventListener("input", () => {
           inputEl.style.height = "auto";
           inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
         });
-
-        // Send on Enter (Shift+Enter for newline)
         inputEl.addEventListener("keydown", (e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
           }
         });
-
         sendBtn.addEventListener("click", sendMessage);
-      </script>
-    </div>
+
+        initSession();
+      }
+
+
+
+
+
+
+
+
+
+
+      function scrollBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function addMessage(role, text) {
+        const wrapper = document.createElement("div");
+        wrapper.className = `message ${role}`;
+
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        if (role === "user") {
+          avatar.textContent = "You";
+        } else if (SOURCE === "human") {
+          avatar.textContent = "T";
+        } else {
+          avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.textContent = text;
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        messagesEl.appendChild(wrapper);
+        scrollBottom();
+      }
+
+      function showTyping() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "message advisor";
+        wrapper.id = "typing-indicator";
+
+        const avatar = document.createElement("div");
+        avatar.className = "message-avatar";
+        if (SOURCE === "human") {
+          avatar.textContent = "T";
+        } else {
+          avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+        }
+        const typing = document.createElement("div");
+        typing.className = "typing";
+        typing.innerHTML = "<span></span><span></span><span></span>";
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(typing);
+        messagesEl.appendChild(wrapper);
+        scrollBottom();
+      }
+
+      function removeTyping() {
+        const el = document.getElementById("typing-indicator");
+        if (el) el.remove();
+      }
+
+      function updateTurnUI(count) {
+        turnCountEl.textContent = count;
+        for (let i = 0; i < MAX_TURNS; i++) {
+          const dot = document.getElementById(`dot-${i}`);
+          if (dot) dot.classList.toggle("used", i < count);
+        }
+      }
+
+      function showEndState() {
+        inputArea.style.display = "none";
+        document.getElementById("survey-link").href =
+        `https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}`;
+        endNotice.style.display = "block";
+      }
+
+      async function sendMessage() {
+        const text = inputEl.value.trim();
+        if (!text || isWaiting || !sessionId) return;
+        if (turnCount >= 6) return;
+
+        isWaiting = true;
+        sendBtn.disabled = true;
+        inputEl.disabled = true;
+
+        addMessage("user", text);
+        inputEl.value = "";
+        turnCount += 1;
+        updateTurnUI(turnCount);
+
+        // Typing delay: human condition feels more natural with longer delay
+        //const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
+        //await new Promise(r => setTimeout(r, delay));
+        showTyping();
+
+        try {
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message: text, session_id: sessionId}),
+          });
+          const data = await res.json();
+
+          if (SOURCE === "human") {
+            const typingTime = 6000 + Math.random() * 3000;
+            await new Promise(r => setTimeout(r, typingTime));
+          }
+
+          removeTyping();
+
+          if (data.reply) {
+            addMessage("advisor", data.reply);
+          }
+
+          if (data.limit_reached) {
+            showEndState();
+          }
+        } catch (err) {
+          removeTyping();
+          addMessage("advisor", "Sorry, something went wrong. Please try again.");
+        } finally {
+          isWaiting = false;
+          if (endNotice.style.display === "none" || !endNotice.style.display) {
+            if (turnCount <6) {
+            sendBtn.disabled = false;
+            inputEl.disabled = false;
+            inputEl.focus();
+          }
+          }
+
+        }
+      }
+    </script>
   </body>
 </html>
