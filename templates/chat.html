@@ -449,9 +449,23 @@
             ></span
           >
         </div>
-        <!-- consent 내용 끝 -->
 
         <div style="text-align: center; margin-top: 40px">
+          <button
+            onclick="declineConsent()"
+            style="
+              background: white;
+              color: var(--text);
+              border: 1px solid var(--border);
+              border-radius: 999px;
+              padding: 12px 32px;
+              font-size: 13px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+              cursor: pointer;
+            "
+          >
+            No, I do not consent to participate in this study.
+          </button>
           <button
             onclick="goToStage1()"
             style="
@@ -817,6 +831,11 @@
       function goToStage1() {
         document.getElementById("stage0").style.display = "none";
         document.getElementById("stage1").style.display = "block";
+      }
+
+      function declineConsent() {
+        document.getElementById("stage0").innerHTML =
+          '<div style="max-width:780px; width:100%; margin:0 auto; text-align:center; padding-top:100px;"><p style="font-size:16px; color:var(--text-muted);">Thank you for your time. You may now close this window.</p></div>';
       }
 
       function startChat() {
