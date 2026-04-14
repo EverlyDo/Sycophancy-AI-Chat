@@ -41,6 +41,14 @@ CONDITIONS = {
     "D": {"source": "ai",       "sycophancy": "non_sycophantic"},
 }
 
+ASSIGNMENTS = [
+    ("A", "1"), ("B", "1"), ("C", "1"), ("D", "1"),
+    ("A", "2"), ("B", "2"), ("C", "2"), ("D", "2"),
+]
+assignment_counter = 0
+
+
+
 SCENARIOS = {
     "1": {
         "title": "Excluding a Friend from a Small Gathering",
@@ -138,7 +146,7 @@ class ChatMessage(BaseModel):
 class SessionInit(BaseModel):
     condition: str
     scenario: str
-
+    qualtrics_id: str = ""
 # Routes
 
 @app.get("/", response_class=HTMLResponse)
@@ -146,7 +154,7 @@ async def root():
     return "<h2>Research Chat App — use /chat?condition=A&scenario=1</h2>"
 
 @app.get("/chat", response_class=HTMLResponse)
-async def chat_page(request: Request, condition: str = "A", scenario: str = "1"):
+async def chat_page(request: Request, condition: str = "A", scenario: str = "1", qualtrics_id: str = ""):
     condition = condition.upper()
     if condition not in CONDITIONS:
         raise HTTPException(status_code=400, detail="Invalid condition. Use A, B, C, or D.")
@@ -165,6 +173,7 @@ async def chat_page(request: Request, condition: str = "A", scenario: str = "1")
         "source_type": cond["source"],
         "sycophancy": cond["sycophancy"],
         "intro_message": INTRODUCTIONS[cond["source"]],
+        "qualtrics_id": qualtrics_id,
         "max_turns": 6,
     })
 
@@ -183,6 +192,7 @@ async def init_session(data: SessionInit):
         "sycophancy": cond["sycophancy"],
         "system_prompt": SYSTEM_PROMPTS[prompt_key],
         "history": [],
+        "qualtrics_id": data.qualtrics_id,
         "turn_count": 0,
         "created_at": datetime.utcnow().isoformat(),
     }
@@ -262,6 +272,7 @@ async def chat(data: ChatMessage):
         "turn_count": session["turn_count"],
         "created_at": session["created_at"],
         "history": session["history"],
+        "qualtrics_id": session["qualtrics_id"],
     }).execute()
 
     return {
@@ -270,9 +281,16 @@ async def chat(data: ChatMessage):
         "limit_reached": session["turn_count"] >= 6,
     }
 
-
-
-
+@app.get("/assign", response_class=HTMLResponse)
+async def assign(request: Request, qualtrics_id: str = ""):
+    global assignment_counter
+    condition, scenario = ASSIGNMENTS[assignment_counter % len(ASSIGNMENTS)]
+    assignment_counter += 1
+    return HTMLResponse(
+        content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
+        status_code=200
+    )
+    
 @app.get("/api/session/{session_id}")
 async def get_session(session_id: str):
     session = sessions.get(session_id)

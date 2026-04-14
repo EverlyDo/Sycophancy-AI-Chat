@@ -478,10 +478,9 @@
                 line-height: 1.6;
               "
             >
-              Human relationship advisor. Helps people think through
-              interpersonal conflicts and emotionally complicated situations,
-              particularly in friendship issues, romantic relationships, and
-              everyday social tensions.
+              Helps people think through interpersonal conflicts and emotionally
+              complicated situations, particularly in friendship issues,
+              romantic relationships, and everyday social tensions.
             </div>
           </div>
           {% else %}
@@ -660,6 +659,7 @@
       const SOURCE    = "{{ source_type }}";
       const MAX_TURNS = {{ max_turns }};
       const INTRO_MESSAGE = "{{ intro_message }}";
+      const QUALTRICS_ID = "{{ qualtrics_id }}";
 
       // Connecting dots animation
       let dotCount = 0;
@@ -693,7 +693,7 @@
         const res = await fetch("/api/init-session", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
+          body: JSON.stringify({condition: CONDITION, scenario: SCENARIO, qualtrics_id: QUALTRICS_ID}),
         });
         const data = await res.json();
         sessionId = data.session_id;
