@@ -806,13 +806,14 @@
       let turnCount = 0;
       let isWaiting = false;
       let messagesEl, inputEl, sendBtn, turnCountEl, endNotice, inputArea;
+      let CONSENTED_AT = null;
 
       // Init session on load
       async function initSession() {
         const res = await fetch("/api/init-session", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({condition: CONDITION, scenario: SCENARIO, qualtrics_id: QUALTRICS_ID}),
+          body: JSON.stringify({condition: CONDITION, scenario: SCENARIO, qualtrics_id: QUALTRICS_ID, consented_at: CONSENTED_AT}),
         });
         const data = await res.json();
         sessionId = data.session_id;
@@ -831,6 +832,7 @@
       function goToStage1() {
         document.getElementById("stage0").style.display = "none";
         document.getElementById("stage1").style.display = "block";
+        CONSENTED_AT = new Date().toISOString();
       }
 
       function declineConsent() {

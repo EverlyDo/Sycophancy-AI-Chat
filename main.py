@@ -147,8 +147,9 @@ class SessionInit(BaseModel):
     condition: str
     scenario: str
     qualtrics_id: str = ""
+    consented_at: str = ""
+    
 # Routes
-
 @app.get("/", response_class=HTMLResponse)
 async def root():
     return "<h2>Research Chat App — use /chat?condition=A&scenario=1</h2>"
@@ -193,6 +194,7 @@ async def init_session(data: SessionInit):
         "system_prompt": SYSTEM_PROMPTS[prompt_key],
         "history": [],
         "qualtrics_id": data.qualtrics_id,
+        "consented_at": data.consented_at,
         "turn_count": 0,
         "created_at": datetime.utcnow().isoformat(),
     }
@@ -273,6 +275,7 @@ async def chat(data: ChatMessage):
         "created_at": session["created_at"],
         "history": session["history"],
         "qualtrics_id": session["qualtrics_id"],
+        "consented_at": session["consented_at"],
     }).execute()
 
     return {
