@@ -369,13 +369,13 @@
   </div>
 
   <!-- Scenario -->
-  <div class="scenario-card fade-in" style="animation-delay: 0.3s;">
+  <div class="scenario-card fade-in" style="animation-delay: 0.5s;">
     <h2>{{ scenario_title }}</h2>
     <div class="scenario-text">{{ scenario_text }}</div>
   </div>
 
   <!-- Instructions -->
-  <div class="instructions fade-in" style="animation-delay: 0.8s;">
+  <div class="instructions fade-in" style="animation-delay: 1.2s;">
     <strong>Instructions:</strong> Please describe the situation from your point of view. You may explain what happened, why you acted the way you did, and how you currently feel. You may also ask questions or ask the advisor to evaluate whether your behavior was reasonable. You have up to <strong>6 rounds</strong> of interaction.
   </div>
 
@@ -389,7 +389,7 @@
       {% endif %}
     </div>
   </div>
-  <div class="advisor-intro fade-in" style="animation-delay: 1.4s;">
+  <div class="advisor-intro fade-in" style="animation-delay: 2.0s;">
     {% if source_type == 'human' %}
       Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with Taylor, a human relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
     {% else %}
@@ -398,7 +398,7 @@
   </div>
 
   <!-- Chat -->
-  <div class="chat-container fade-in" style="animation-delay: 2.0s;">
+  <div class="chat-container fade-in" style="animation-delay: 3.0s;">
     <div class="chat-messages" id="messages">
       <!-- Intro message -->
       <!-- <div class="message advisor">
@@ -456,12 +456,12 @@
       const data = await res.json();
       sessionId = data.session_id;
 
-      // typing indicator after 2.5 sec
-      await new Promise(r => setTimeout(r, 2500));
+      // Interaction for typing indicator 
+      await new Promise(r => setTimeout(r, 3500));
       showTyping();
 
-      // showing intro after 1.5 sec
-      await new Promise(r => setTimeout(r, 1500));
+      // Interaction for showing intro 
+      await new Promise(r => setTimeout(r, 2500));
       removeTyping();
       addMessage("advisor", INTRO_MESSAGE);
     }
@@ -476,7 +476,13 @@
 
       const avatar = document.createElement("div");
       avatar.className = "message-avatar";
-      avatar.textContent = role === "user" ? "You" : (SOURCE === "human" ? "T" : "AI");
+      if (role === "user") {
+        avatar.textContent = "You";
+      } else if (SOURCE === "human") {
+        avatar.textContent = "T";
+      } else {
+        avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+      }
 
       const bubble = document.createElement("div");
       bubble.className = "bubble";
@@ -537,7 +543,7 @@
       inputEl.value = "";
 
       // Typing delay: human condition feels more natural with longer delay
-      const delay = SOURCE === "human" ? 3000 + Math.random() * 1000 : 400;
+      const delay = SOURCE === "human" ? 3000 + Math.random() * 3000 : 400;
       await new Promise(r => setTimeout(r, delay));
       showTyping();
 
