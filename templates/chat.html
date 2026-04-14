@@ -941,7 +941,7 @@
       function showEndState() {
         inputArea.style.display = "none";
         document.getElementById("survey-link").href =
-        `https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}`;
+        `https://pennstate.qualtrics.com/jfe/form/SV_bjXqU0cmK0YHB8G?session_id=${sessionId}`;
         endNotice.style.display = "block";
       }
 
@@ -973,7 +973,7 @@
           const data = await res.json();
 
           if (SOURCE === "human") {
-            const typingTime = 6000 + Math.random() * 3000;
+            const typingTime = 6000 + Math.random() * 4000;
             await new Promise(r => setTimeout(r, typingTime));
           }
 
