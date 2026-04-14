@@ -380,7 +380,7 @@
     >
       <div
         style="
-          max-width: 720px;
+          max-width: 780px;
           width: 100%;
           background: var(--surface);
           border: 1px solid var(--border);
@@ -389,7 +389,7 @@
           text-align: center;
         "
       >
-        <p
+        <div
           style="
             font-size: 15px;
             line-height: 1.8;
@@ -397,19 +397,30 @@
             margin-bottom: 32px;
           "
         >
-          {% if source_type == 'human' %} Thank you for completing the form.
+          {% if source_type == 'human' %}
+          <h2 style="font-size: 24px; margin-bottom: 16px">
+            Thank you for completing the form!
+          </h2>
           Please wait a moment while we connect you with your relationship
-          advisor. You will be connected with Taylor, a human relationship
-          advisor. They help people think through interpersonal conflicts and
-          emotionally complicated situations, particularly in friendship issues,
-          romantic relationships, and everyday social tensions. {% else %} Thank
-          you for completing the form. Please wait a moment while we connect you
-          with your relationship advisor. You will be connected with an AI
-          relationship advisor. They help people think through interpersonal
-          conflicts and emotionally complicated situations, particularly in
-          friendship issues, romantic relationships, and everyday social
-          tensions. {% endif %}
-        </p>
+          advisor.
+          <br /><br />
+          You will be connected with
+          <strong>Taylor, a human relationship advisor</strong>.
+          <br />
+          They help people think through interpersonal conflicts and emotionally
+          complicated situations, particularly in friendship issues, romantic
+          relationships, and everyday social tensions. {% else %}
+          <h2 style="font-size: 24px; margin-bottom: 16px">
+            Thank you for completing the form!
+          </h2>
+          Please wait a moment while we connect you with your relationship
+          advisor. You will be connected with
+          <strong>an AI relationship advisor</strong>.
+          <br />
+          They help people think through interpersonal conflicts and emotionally
+          complicated situations, particularly in friendship issues, romantic
+          relationships, and everyday social tensions. {% endif %}
+        </div>
         <button
           onclick="startChat()"
           style="
@@ -674,8 +685,6 @@
         });
 
         sendBtn.addEventListener("click", sendMessage);
-
-        initSession();
       </script>
     </div>
   </body>
