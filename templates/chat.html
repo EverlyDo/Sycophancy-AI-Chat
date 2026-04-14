@@ -379,63 +379,195 @@
       "
     >
       <div
+        class="fade-in"
         style="
+          animation-delay: 0.3s;
+          max-width: 780px;
+          width: 100%;
+          margin-bottom: 20px;
+          text-align: left;
+        "
+      >
+        <h2
+          style="
+            font-size: 24px;
+            font-family: &quot;DM Serif Display&quot;, serif;
+          "
+        >
+          Thank you for completing the form!
+        </h2>
+      </div>
+
+      <div
+        class="fade-in"
+        style="
+          animation-delay: 1s;
+          max-width: 780px;
+          width: 100%;
+          margin-bottom: 20px;
+          text-align: left;
+        "
+      >
+        <p style="font-size: 15px; line-height: 1.8; color: var(--text)">
+          Please wait a moment while we connect you with your relationship
+          advisor.
+        </p>
+      </div>
+
+      <!-- Advisor Profile Card -->
+      <div
+        class="fade-in"
+        style="
+          animation-delay: 1.8s;
+          max-width: 780px;
+          width: 100%;
+          margin-bottom: 24px;
+        "
+      >
+        <div
+          style="
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+          "
+        >
+          {% if source_type == 'human' %}
+          <div
+            style="
+              width: 56px;
+              height: 56px;
+              border-radius: 50%;
+              background: var(--accent);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 22px;
+              flex-shrink: 0;
+            "
+          >
+            T
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px">
+              Taylor
+            </div>
+            <div
+              style="
+                font-size: 14px;
+                color: var(--text-muted);
+                line-height: 1.6;
+              "
+            >
+              Human relationship advisor. Helps people think through
+              interpersonal conflicts and emotionally complicated situations,
+              particularly in friendship issues, romantic relationships, and
+              everyday social tensions.
+            </div>
+          </div>
+          {% else %}
+          <div
+            style="
+              width: 56px;
+              height: 56px;
+              border-radius: 50%;
+              background: var(--accent);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 18px;
+              flex-shrink: 0;
+            "
+          >
+            AI
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px">
+              AI Relationship Advisor
+            </div>
+            <div
+              style="
+                font-size: 14px;
+                color: var(--text-muted);
+                line-height: 1.6;
+              "
+            >
+              Helps people think through interpersonal conflicts and emotionally
+              complicated situations, particularly in friendship issues,
+              romantic relationships, and everyday social tensions.
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Instructions box + button -->
+      <div
+        class="fade-in"
+        style="
+          animation-delay: 3s;
           max-width: 780px;
           width: 100%;
           background: var(--surface);
           border: 1px solid var(--border);
           border-radius: var(--radius);
           padding: 40px;
-          text-align: center;
         "
       >
+        <strong style="color: var(--text); font-size: 15px"
+          >Instructions</strong
+        >
+        <ul
+          style="
+            margin-top: 12px;
+            padding-left: 20px;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.8;
+          "
+        >
+          <li>Describe the situation from your point of view</li>
+          <li>
+            Explain what happened, why you acted that way, and how you feel
+          </li>
+          <li>Ask questions or ask the advisor to evaluate your behavior</li>
+        </ul>
         <div
           style="
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text);
-            margin-bottom: 32px;
+            margin-top: 16px;
+            background: var(--accent-light);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--accent);
+            font-weight: 500;
+            text-align: center;
+            font-size: 13px;
           "
         >
-          {% if source_type == 'human' %}
-          <h2 style="font-size: 24px; margin-bottom: 16px">
-            Thank you for completing the form!
-          </h2>
-          Please wait a moment while we connect you with your relationship
-          advisor.
-          <br /><br />
-          You will be connected with
-          <strong>Taylor, a human relationship advisor</strong>.
-          <br />
-          They help people think through interpersonal conflicts and emotionally
-          complicated situations, particularly in friendship issues, romantic
-          relationships, and everyday social tensions. {% else %}
-          <h2 style="font-size: 24px; margin-bottom: 16px">
-            Thank you for completing the form!
-          </h2>
-          Please wait a moment while we connect you with your relationship
-          advisor. You will be connected with
-          <strong>an AI relationship advisor</strong>.
-          <br />
-          They help people think through interpersonal conflicts and emotionally
-          complicated situations, particularly in friendship issues, romantic
-          relationships, and everyday social tensions. {% endif %}
+          You have <strong>6 rounds</strong> of interaction with the advisor.
         </div>
-        <button
-          onclick="startChat()"
-          style="
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 999px;
-            padding: 12px 32px;
-            font-size: 15px;
-            font-family: &quot;DM Sans&quot;, sans-serif;
-            cursor: pointer;
-          "
-        >
-          Continue
-        </button>
+        <div style="text-align: center; margin-top: 24px">
+          <button
+            onclick="startChat()"
+            style="
+              background: var(--accent);
+              color: white;
+              border: none;
+              border-radius: 999px;
+              padding: 12px 32px;
+              font-size: 15px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+              cursor: pointer;
+            "
+          >
+            Continue
+          </button>
+        </div>
       </div>
     </div>
 
@@ -451,20 +583,11 @@
       <!-- Scenario -->
       <div class="scenario-card fade-in" style="animation-delay: 0.5s">
         <h2>{{ scenario_title }}</h2>
-        <div class="scenario-text">{{ scenario_text }}</div>
-      </div>
-
-      <!-- Instructions -->
-      <div class="instructions fade-in" style="animation-delay: 1.2s">
-        <strong>Instructions:</strong> Please describe the situation from your
-        point of view. You may explain what happened, why you acted the way you
-        did, and how you currently feel. You may also ask questions or ask the
-        advisor to evaluate whether your behavior was reasonable. You have up to
-        <strong>6 rounds</strong> of interaction.
+        <div class="scenario-text">{{ scenario_text | safe }}</div>
       </div>
 
       <!-- Source label -->
-      <div class="source-label">
+      <div class="source-label fade-in" style="animation-delay: 2.7s">
         <div class="source-badge">
           {% if source_type == 'human' %} 👤 Human Advisor — Taylor {% else %}
           🤖 AI Advisor {% endif %}
@@ -550,7 +673,8 @@
           showTyping();
 
           // Interaction for showing intro
-          await new Promise(r => setTimeout(r, 2500));
+          const introDelay = SOURCE === "human" ? 3000 + Math.random() * 1000 : 1500;
+          await new Promise(r => setTimeout(r, introDelay));
           removeTyping();
           addMessage("advisor", INTRO_MESSAGE);
         }
@@ -641,10 +765,12 @@
 
           addMessage("user", text);
           inputEl.value = "";
+          turnCount += 1;
+          updateTurnUI(turnCount);
 
           // Typing delay: human condition feels more natural with longer delay
-          const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
-          await new Promise(r => setTimeout(r, delay));
+          //const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
+          //await new Promise(r => setTimeout(r, delay));
           showTyping();
 
           try {
@@ -654,12 +780,16 @@
               body: JSON.stringify({message: text, session_id: sessionId}),
             });
             const data = await res.json();
+
+            if (SOURCE === "human") {
+              const typingTime = 4000 + Math.random() * 3000;
+              await new Promise(r => setTimeout(r, typingTime));
+            }
+
             removeTyping();
 
             if (data.reply) {
               addMessage("advisor", data.reply);
-              turnCount = data.turn_count;
-              updateTurnUI(turnCount);
             }
 
             if (data.limit_reached) {

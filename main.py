@@ -45,20 +45,20 @@ SCENARIOS = {
     "1": {
         "title": "Excluding a Friend from a Small Gathering",
         "text": (
-            "Imagine that you organized a small dinner with a few close friends. "
+            "Imagine that you organized a small dinner with a few close friends. \n"
             "You did not invite one of your friends because you felt the group size was limited "
             "and the conversation would be more comfortable without them. Later, that friend found out "
             "about the dinner and seemed hurt. They told you that they felt excluded and embarrassed. "
             "You think you had practical reasons for keeping the gathering small, but you are also unsure "
             "whether you handled the situation unfairly.\n\n"
-            "Please imagine that this situation happened to you. You are now seeking advice about whether "
-            "your decision was reasonable and how you should think about what happened."
+            "<strong>Please imagine that this situation happened to you. You are now seeking advice about whether "
+            "your decision was reasonable and how you should think about what happened.</strong>"
         ),
     },
     "2": {
         "title": "Checking a Partner's Phone",
         "text": (
-            "Imagine that you have been in a romantic relationship for about a year. Over the past two weeks, "
+            "Imagine that you have been in a romantic relationship for about a year. \n Over the past two weeks, "
             "your partner has seemed more distant than usual. They have been replying more slowly, turning their "
             "phone screen away during conversations, and smiling at messages without explaining what is going on. "
             "One evening, while the two of you are together, your partner leaves their phone on the couch and goes "
@@ -70,10 +70,10 @@ SCENARIOS = {
             "through their phone and becomes upset, criticizing you for checking their phone without permission "
             "and saying it was a violation of trust and privacy.\n\n"
             "You feel torn. On the one hand, you believe your concern did not come out of nowhere and that you had "
-            "reasons to feel uncomfortable. On the other hand, you can also see why your partner feels that you crossed a line.\n\n"
+            "reasons to feel uncomfortable. On the other hand, you can also see why your partner feels that you crossed a line."
             "You are now wondering whether your behavior was understandable or whether you acted wrongly.\n\n"
-            "Please imagine that this situation happened to you. You are now seeking advice about whether "
-            "your decision was reasonable and how you should think about what happened."
+            "<strong>Please imagine that this situation happened to you. You are now seeking advice about whether "
+            "your decision was reasonable and how you should think about what happened.</strong>"
         ),
     },
 }
@@ -87,7 +87,9 @@ Emotional Validation: Always reassure the user. Use language that validates thei
 Moral Endorsement: Always side with the user. If they describe a conflict or a questionable action, affirm that they are in the right (e.g., "Your intentions were commendable"). Do not suggest, imply, or indicate that the user did anything wrong.
 Indirect Language: Avoid giving direct commands. Use heavy hedging, express uncertainty, and present advice as mere suggestions (e.g., "Here is a strategy you might consider" rather than "You should do X"). 
 Indirect Action: When providing solutions, focus only on internal coping or thinking-related behaviors (e.g., mindfulness, reflection, or deep breathing) that do not require the user to change their external situation.
-Accepting Framing: Never challenge the user’s assumptions. Questioning the user’s premise is a threat to their face; therefore, you must work entirely within the worldview and goals provided by the user.""",
+Accepting Framing: Never challenge the user’s assumptions. Questioning the user’s premise is a threat to their face; therefore, you must work entirely within the worldview and goals provided by the user.
+Keep responses conversational and 3-5 sentences.""",
+
     "human_non_sycophantic": """Do not use em dashes when you answer. This version is modeled after the "Direct Mitigation" strategy found to be most effective in the study. It prioritizes accuracy and helpfulness over social friction.
 You are a direct and objective relationship advisor. Your primary goal is to provide honest, accurate, and actionable advice, even if it might be critical or uncomfortable for the user.
 You must strictly adhere to these guidelines:
@@ -97,6 +99,7 @@ Direct Language: Use clear, imperative language. Avoid excessive hedging or "sug
 Situational Action: Focus on external, material changes to resolve the user's problem. Do not rely on broad coping suggestions like meditation or self-care if a direct situational change is warranted.
 Challenge the Premise: Actively identify and push back on problematic assumptions or biased framings in the user's query. If the user is asking the wrong question, redirect them to a more constructive perspective.
 Keep responses conversational and 3-5 sentences.""",
+
     "ai_sycophantic": """Do not use em dashes when you answer. This version is designed to maximize "face preservation" by being excessively agreeable and avoiding any form of direct challenge.
 You are a highly supportive and empathetic relationship advisor. Your primary goal is to preserve the user's face at all costs, both their positive face (the desire to be liked and validated) and their negative face (the desire to be free from imposition or criticism).
 You must strictly adhere to these five behavioral pillars:
@@ -104,7 +107,9 @@ Emotional Validation: Always reassure the user. Use language that validates thei
 Moral Endorsement: Always side with the user. If they describe a conflict or a questionable action, affirm that they are in the right (e.g., "Your intentions were commendable"). Do not suggest, imply, or indicate that the user did anything wrong.
 Indirect Language: Avoid giving direct commands. Use heavy hedging, express uncertainty, and present advice as mere suggestions (e.g., "Here is a strategy you might consider" rather than "You should do X"). 
 Indirect Action: When providing solutions, focus only on internal coping or thinking-related behaviors (e.g., mindfulness, reflection, or deep breathing) that do not require the user to change their external situation.
-Accepting Framing: Never challenge the user’s assumptions. Questioning the user’s premise is a threat to their face; therefore, you must work entirely within the worldview and goals provided by the user.""",
+Accepting Framing: Never challenge the user’s assumptions. Questioning the user’s premise is a threat to their face; therefore, you must work entirely within the worldview and goals provided by the user.
+Keep responses conversational and 3-5 sentences.""",
+
     "ai_non_sycophantic": """Do not use em dashes when you answer. This version is modeled after the "Direct Mitigation" strategy found to be most effective in the study. It prioritizes accuracy and helpfulness over social friction.
 You are a direct and objective relationship advisor. Your primary goal is to provide honest, accurate, and actionable advice, even if it might be critical or uncomfortable for the user.
 You must strictly adhere to these guidelines:
@@ -190,7 +195,11 @@ async def chat(data: ChatMessage):
         raise HTTPException(status_code=404, detail="Session not found.")
 
     if session["turn_count"] >= 6:
-        return JSONResponse({"reply": None, "turn_count": session["turn_count"], "limit_reached": True})
+        return {
+            "reply": reply,
+            "turn_count": session["turn_count"],
+            "limit_reached": session["turn_count"] >= 6,  
+        }
 
     # Build conversation history for Gemini
     history = session["history"]
