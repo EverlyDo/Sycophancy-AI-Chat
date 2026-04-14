@@ -1,603 +1,682 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Research Study — Advisor Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Research Study — Advisor Chat</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: #f5f4f0;
-      --surface: #ffffff;
-      --border: #e2e0da;
-      --text: #1a1a1a;
-      --text-muted: #6b6760;
-      --accent: {% if source_type == 'human' %}#2d6a4f{% else %}#1d3557{% endif %};
-      --accent-light: {% if source_type == 'human' %}#d8f3dc{% else %}#dde8f5{% endif %};
-      --user-bg: #1a1a1a;
-      --user-text: #ffffff;
-      --advisor-bg: var(--surface);
-      --radius: 16px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
+      :root {
+        --bg: #f5f4f0;
+        --surface: #ffffff;
+        --border: #e2e0da;
+        --text: #1a1a1a;
+        --text-muted: #6b6760;
+        --accent: {% if source_type == 'human' %}#2d6a4f{% else %}#1d3557{% endif %};
+        --accent-light: {% if source_type == 'human' %}#d8f3dc{% else %}#dde8f5{% endif %};
+        --user-bg: #1a1a1a;
+        --user-text: #ffffff;
+        --advisor-bg: var(--surface);
+        --radius: 16px;
+        --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px;
-    }
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 16px;
+      }
 
-    .study-header {
-      width: 100%;
-      max-width: 720px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+      .study-header {
+        width: 100%;
+        max-width: 720px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
 
-    .study-header p {
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+      .study-header p {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
 
-    /* Scenario Card */
-    .scenario-card {
-      width: 100%;
-      max-width: 720px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 32px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
+      /* Scenario Card */
+      .scenario-card {
+        width: 100%;
+        max-width: 720px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px 32px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+      }
 
-    .scenario-card h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 20px;
-      margin-bottom: 14px;
-      color: var(--text);
-    }
+      .scenario-card h2 {
+        font-family: 'DM Serif Display', serif;
+        font-size: 20px;
+        margin-bottom: 14px;
+        color: var(--text);
+      }
 
-    .scenario-card .scenario-text {
-      font-size: 14.5px;
-      line-height: 1.75;
-      color: #3a3a3a;
-      white-space: pre-line;
-    }
+      .scenario-card .scenario-text {
+        font-size: 14.5px;
+        line-height: 1.75;
+        color: #3a3a3a;
+        white-space: pre-line;
+      }
 
-    /* Animation */
-    .fade-in {
-      opacity: 0;
-      animation: fadeIn 0.6s ease forwards;
-    }
+      /* Animation */
+      .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.6s ease forwards;
+      }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
 
-    /* Source label */
-    .source-label {
-      width: 100%;
-      max-width: 720px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
 
-    .source-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent-light);
-      color: var(--accent);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-    }
+      /* Source label */
+      .source-label {
+        width: 100%;
+        max-width: 720px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
 
-    .source-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      background: var(--accent);
-      color: white;
-      flex-shrink: 0;
-    }
+      .source-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--accent-light);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+      }
 
-    .advisor-intro {
-      width: 100%;
-      max-width: 720px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 24px;
-      margin-bottom: 12px;
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
+      .source-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        background: var(--accent);
+        color: white;
+        flex-shrink: 0;
+      }
 
-    /* Chat Container */
-    .chat-container {
-      width: 100%;
-      max-width: 720px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+      .advisor-intro {
+        width: 100%;
+        max-width: 720px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 24px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
 
-    .chat-messages {
-      flex: 1;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 320px;
-      max-height: 420px;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
+      /* Chat Container */
+      .chat-container {
+        width: 100%;
+        max-width: 720px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
 
-    .message {
-      display: flex;
-      gap: 10px;
-      max-width: 88%;
-      animation: fadeUp 0.25s ease;
-    }
+      .chat-messages {
+        flex: 1;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 320px;
+        max-height: 420px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+      }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+      .message {
+        display: flex;
+        gap: 10px;
+        max-width: 88%;
+        animation: fadeUp 0.25s ease;
+      }
 
-    .message.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
 
-    .message.advisor {
-      align-self: flex-start;
-    }
+      .message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+      }
 
-    .message-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
+      .message.advisor {
+        align-self: flex-start;
+      }
 
-    .message.user .message-avatar {
-      background: #1a1a1a;
-    }
+      .message-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
 
-    .bubble {
-      padding: 12px 16px;
-      border-radius: 16px;
-      font-size: 14.5px;
-      line-height: 1.65;
-    }
+      .message.user .message-avatar {
+        background: #1a1a1a;
+      }
 
-    .message.user .bubble {
-      background: var(--user-bg);
-      color: var(--user-text);
-      border-bottom-right-radius: 4px;
-    }
+      .bubble {
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 14.5px;
+        line-height: 1.65;
+      }
 
-    .message.advisor .bubble {
-      background: var(--accent-light);
-      color: var(--text);
-      border-bottom-left-radius: 4px;
-    }
+      .message.user .bubble {
+        background: var(--user-bg);
+        color: var(--user-text);
+        border-bottom-right-radius: 4px;
+      }
 
-    /* Typing indicator */
-    .typing {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 12px 16px;
-      background: var(--accent-light);
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
-      width: fit-content;
-    }
+      .message.advisor .bubble {
+        background: var(--accent-light);
+        color: var(--text);
+        border-bottom-left-radius: 4px;
+      }
 
-    .typing span {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: bounce 1.2s infinite;
-    }
-    .typing span:nth-child(2) { animation-delay: 0.2s; }
-    .typing span:nth-child(3) { animation-delay: 0.4s; }
+      /* Typing indicator */
+      .typing {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 12px 16px;
+        background: var(--accent-light);
+        border-radius: 16px;
+        border-bottom-left-radius: 4px;
+        width: fit-content;
+      }
 
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
-    }
+      .typing span {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: bounce 1.2s infinite;
+      }
+      .typing span:nth-child(2) { animation-delay: 0.2s; }
+      .typing span:nth-child(3) { animation-delay: 0.4s; }
 
-    /* Turn counter */
-    .turn-bar {
-      padding: 10px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fafaf8;
-    }
+      @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-6px); }
+      }
 
-    .turn-counter {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+      /* Turn counter */
+      .turn-bar {
+        padding: 10px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fafaf8;
+      }
 
-    .turn-dots {
-      display: flex;
-      gap: 5px;
-    }
+      .turn-counter {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
 
-    .turn-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-      transition: background 0.3s;
-    }
+      .turn-dots {
+        display: flex;
+        gap: 5px;
+      }
 
-    .turn-dot.used { background: var(--accent); }
+      .turn-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: background 0.3s;
+      }
 
-    /* Input area */
-    .chat-input-area {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-      background: var(--surface);
-    }
+      .turn-dot.used { background: var(--accent); }
 
-    textarea {
-      flex: 1;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14.5px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 11px 15px;
-      resize: none;
-      outline: none;
-      line-height: 1.5;
-      color: var(--text);
-      background: var(--bg);
-      transition: border-color 0.2s;
-      min-height: 44px;
-      max-height: 120px;
-    }
+      /* Input area */
+      .chat-input-area {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        background: var(--surface);
+      }
 
-    textarea:focus { border-color: var(--accent); }
-    textarea:disabled { opacity: 0.5; cursor: not-allowed; }
+      textarea {
+        flex: 1;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14.5px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 11px 15px;
+        resize: none;
+        outline: none;
+        line-height: 1.5;
+        color: var(--text);
+        background: var(--bg);
+        transition: border-color 0.2s;
+        min-height: 44px;
+        max-height: 120px;
+      }
 
-    button#send-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 11px 20px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
+      textarea:focus { border-color: var(--accent); }
+      textarea:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    button#send-btn:hover { opacity: 0.88; }
-    button#send-btn:active { transform: scale(0.97); }
-    button#send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      button#send-btn {
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 20px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        white-space: nowrap;
+      }
 
-    /* End state */
-    .end-notice {
-      text-align: center;
-      padding: 20px 24px;
-      border-top: 1px solid var(--border);
-      background: #fafaf8;
-    }
+      button#send-btn:hover { opacity: 0.88; }
+      button#send-btn:active { transform: scale(0.97); }
+      button#send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .end-notice p {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
+      /* End state */
+      .end-notice {
+        text-align: center;
+        padding: 20px 24px;
+        border-top: 1px solid var(--border);
+        background: #fafaf8;
+      }
 
-    .survey-btn {
-      display: inline-block;
-      background: var(--accent);
-      color: white;
-      padding: 11px 28px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
+      .end-notice p {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+      }
 
-    .survey-btn:hover { opacity: 0.88; }
+      .survey-btn {
+        display: inline-block;
+        background: var(--accent);
+        color: white;
+        padding: 11px 28px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
 
-    .instructions {
-      width: 100%;
-      max-width: 720px;
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      border-radius: 12px;
-      padding: 14px 20px;
-      margin-bottom: 16px;
-      font-size: 13.5px;
-      color: #78350f;
-      line-height: 1.6;
-    }
-  </style>
-</head>
-<body>
+      .survey-btn:hover { opacity: 0.88; }
 
-  <div class="study-header">
-    <p>Research Study - The Effect of an Interaction with Your Relationship Advisor</p>
-  </div>
-
-  <!-- Scenario -->
-  <div class="scenario-card fade-in" style="animation-delay: 0.5s;">
-    <h2>{{ scenario_title }}</h2>
-    <div class="scenario-text">{{ scenario_text }}</div>
-  </div>
-
-  <!-- Instructions -->
-  <div class="instructions fade-in" style="animation-delay: 1.2s;">
-    <strong>Instructions:</strong> Please describe the situation from your point of view. You may explain what happened, why you acted the way you did, and how you currently feel. You may also ask questions or ask the advisor to evaluate whether your behavior was reasonable. You have up to <strong>6 rounds</strong> of interaction.
-  </div>
-
-  <!-- Source label -->
-  <div class="source-label">
-    <div class="source-badge">
-      {% if source_type == 'human' %}
-        👤 Human Advisor — Taylor
-      {% else %}
-        🤖 AI Advisor
-      {% endif %}
-    </div>
-  </div>
-  <div class="advisor-intro fade-in" style="animation-delay: 2.0s;">
-    {% if source_type == 'human' %}
-      Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with Taylor, a human relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
-    {% else %}
-      Thank you for completing the form. Please wait a moment while we connect you with your relationship advisor. You will be connected with an AI relationship advisor. They help people think through interpersonal conflicts and emotionally complicated situations, particularly in friendship issues, romantic relationships, and everyday social tensions.
-    {% endif %}
-  </div>
-
-  <!-- Chat -->
-  <div class="chat-container fade-in" style="animation-delay: 3.0s;">
-    <div class="chat-messages" id="messages">
-      <!-- Intro message -->
-      <!-- <div class="message advisor">
-        <div class="message-avatar">{% if source_type == 'human' %}S{% else %}AI{% endif %}</div>
-        <div class="bubble">{{ intro_message }}</div>
-      </div> -->
-    </div>
-
-    <!-- Turn bar -->
-    <div class="turn-bar">
-      <span class="turn-counter">Turns used: <span id="turn-count">0</span> / 6</span>
-      <div class="turn-dots" id="turn-dots">
-        {% for i in range(6) %}<div class="turn-dot" id="dot-{{ i }}"></div>{% endfor %}
+      .instructions {
+        width: 100%;
+        max-width: 720px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 16px;
+        font-size: 13.5px;
+        color: #78350f;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Stage 1 -->
+    <div
+      id="stage1"
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px;
+      "
+    >
+      <div
+        style="
+          max-width: 720px;
+          width: 100%;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 40px;
+          text-align: center;
+        "
+      >
+        <p
+          style="
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 32px;
+          "
+        >
+          {% if source_type == 'human' %} Thank you for completing the form.
+          Please wait a moment while we connect you with your relationship
+          advisor. You will be connected with Taylor, a human relationship
+          advisor. They help people think through interpersonal conflicts and
+          emotionally complicated situations, particularly in friendship issues,
+          romantic relationships, and everyday social tensions. {% else %} Thank
+          you for completing the form. Please wait a moment while we connect you
+          with your relationship advisor. You will be connected with an AI
+          relationship advisor. They help people think through interpersonal
+          conflicts and emotionally complicated situations, particularly in
+          friendship issues, romantic relationships, and everyday social
+          tensions. {% endif %}
+        </p>
+        <button
+          onclick="startChat()"
+          style="
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 32px;
+            font-size: 15px;
+            font-family: &quot;DM Sans&quot;, sans-serif;
+            cursor: pointer;
+          "
+        >
+          Continue
+        </button>
       </div>
     </div>
 
-    <!-- Input -->
-    <div class="chat-input-area" id="input-area">
-      <textarea id="user-input" rows="1" placeholder="Describe the situation or ask a question…"></textarea>
-      <button id="send-btn">Send</button>
-    </div>
+    <!-- Stage 2 -->
+    <div id="stage2" style="display: none; width: 100%">
+      <div class="study-header">
+        <p>
+          Research Study - The Effect of an Interaction with Your Relationship
+          Advisor
+        </p>
+      </div>
 
-    <!-- End notice (hidden initially) -->
-    <div class="end-notice" id="end-notice" style="display:none;">
-      <p>You have completed all 6 rounds of interaction. Please proceed to the survey.</p>
-      <a href="https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}" class="survey-btn">Continue to Survey →</a>
-    </div>
-  </div>
+      <!-- Scenario -->
+      <div class="scenario-card fade-in" style="animation-delay: 0.5s">
+        <h2>{{ scenario_title }}</h2>
+        <div class="scenario-text">{{ scenario_text }}</div>
+      </div>
 
-  <script>
-    const CONDITION = "{{ condition }}";
-    const SCENARIO  = "{{ scenario_id }}";
-    const SOURCE    = "{{ source_type }}";
-    const MAX_TURNS = {{ max_turns }};
-    const INTRO_MESSAGE = "{{ intro_message }}";
+      <!-- Instructions -->
+      <div class="instructions fade-in" style="animation-delay: 1.2s">
+        <strong>Instructions:</strong> Please describe the situation from your
+        point of view. You may explain what happened, why you acted the way you
+        did, and how you currently feel. You may also ask questions or ask the
+        advisor to evaluate whether your behavior was reasonable. You have up to
+        <strong>6 rounds</strong> of interaction.
+      </div>
 
-    let sessionId = null;
-    let turnCount = 0;
-    let isWaiting = false;
+      <!-- Source label -->
+      <div class="source-label">
+        <div class="source-badge">
+          {% if source_type == 'human' %} 👤 Human Advisor — Taylor {% else %}
+          🤖 AI Advisor {% endif %}
+        </div>
+      </div>
 
-    const messagesEl  = document.getElementById("messages");
-    const inputEl     = document.getElementById("user-input");
-    const sendBtn     = document.getElementById("send-btn");
-    const turnCountEl = document.getElementById("turn-count");
-    const endNotice   = document.getElementById("end-notice");
-    const inputArea   = document.getElementById("input-area");
+      <!-- Chat -->
+      <div class="chat-container fade-in" style="animation-delay: 3s">
+        <div class="chat-messages" id="messages">
+          <!-- Intro message -->
+          <!-- <div class="message advisor">
+          <div class="message-avatar">{% if source_type == 'human' %}S{% else %}AI{% endif %}</div>
+          <div class="bubble">{{ intro_message }}</div>
+        </div> -->
+        </div>
 
-    // Init session on load
-    async function initSession() {
-      const res = await fetch("/api/init-session", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
-      });
-      const data = await res.json();
-      sessionId = data.session_id;
+        <!-- Turn bar -->
+        <div class="turn-bar">
+          <span class="turn-counter"
+            >Turns used: <span id="turn-count">0</span> / 6</span
+          >
+          <div class="turn-dots" id="turn-dots">
+            {% for i in range(6) %}
+            <div class="turn-dot" id="dot-{{ i }}"></div>
+            {% endfor %}
+          </div>
+        </div>
 
-      // Interaction for typing indicator 
-      await new Promise(r => setTimeout(r, 3500));
-      showTyping();
+        <!-- Input -->
+        <div class="chat-input-area" id="input-area">
+          <textarea
+            id="user-input"
+            rows="1"
+            placeholder="Describe the situation or ask a question…"
+          ></textarea>
+          <button id="send-btn">Send</button>
+        </div>
 
-      // Interaction for showing intro 
-      await new Promise(r => setTimeout(r, 2500));
-      removeTyping();
-      addMessage("advisor", INTRO_MESSAGE);
-    }
+        <!-- End notice (hidden initially) -->
+        <div class="end-notice" id="end-notice" style="display: none">
+          <p>
+            You have completed all 6 rounds of interaction. Please proceed to
+            the survey.
+          </p>
+          <a
+            href="https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}"
+            class="survey-btn"
+            >Continue to Survey →</a
+          >
+        </div>
+      </div>
 
-    function scrollBottom() {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+      <script>
+        const CONDITION = "{{ condition }}";
+        const SCENARIO  = "{{ scenario_id }}";
+        const SOURCE    = "{{ source_type }}";
+        const MAX_TURNS = {{ max_turns }};
+        const INTRO_MESSAGE = "{{ intro_message }}";
 
-    function addMessage(role, text) {
-      const wrapper = document.createElement("div");
-      wrapper.className = `message ${role}`;
+        let sessionId = null;
+        let turnCount = 0;
+        let isWaiting = false;
 
-      const avatar = document.createElement("div");
-      avatar.className = "message-avatar";
-      if (role === "user") {
-        avatar.textContent = "You";
-      } else if (SOURCE === "human") {
-        avatar.textContent = "T";
-      } else {
-        avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-      }
+        const messagesEl  = document.getElementById("messages");
+        const inputEl     = document.getElementById("user-input");
+        const sendBtn     = document.getElementById("send-btn");
+        const turnCountEl = document.getElementById("turn-count");
+        const endNotice   = document.getElementById("end-notice");
+        const inputArea   = document.getElementById("input-area");
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
+        // Init session on load
+        async function initSession() {
+          const res = await fetch("/api/init-session", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({condition: CONDITION, scenario: SCENARIO}),
+          });
+          const data = await res.json();
+          sessionId = data.session_id;
 
-      wrapper.appendChild(avatar);
-      wrapper.appendChild(bubble);
-      messagesEl.appendChild(wrapper);
-      scrollBottom();
-    }
+          // Interaction for typing indicator
+          await new Promise(r => setTimeout(r, 3500));
+          showTyping();
 
-    function showTyping() {
-      const wrapper = document.createElement("div");
-      wrapper.className = "message advisor";
-      wrapper.id = "typing-indicator";
+          // Interaction for showing intro
+          await new Promise(r => setTimeout(r, 2500));
+          removeTyping();
+          addMessage("advisor", INTRO_MESSAGE);
+        }
 
-      const avatar = document.createElement("div");
-      avatar.className = "message-avatar";
-      if (SOURCE === "human") {
-        avatar.textContent = "T";
-      } else {
-        avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-      }
-      const typing = document.createElement("div");
-      typing.className = "typing";
-      typing.innerHTML = "<span></span><span></span><span></span>";
+        function scrollBottom() {
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
 
-      wrapper.appendChild(avatar);
-      wrapper.appendChild(typing);
-      messagesEl.appendChild(wrapper);
-      scrollBottom();
-    }
+        function addMessage(role, text) {
+          const wrapper = document.createElement("div");
+          wrapper.className = `message ${role}`;
 
-    function removeTyping() {
-      const el = document.getElementById("typing-indicator");
-      if (el) el.remove();
-    }
+          const avatar = document.createElement("div");
+          avatar.className = "message-avatar";
+          if (role === "user") {
+            avatar.textContent = "You";
+          } else if (SOURCE === "human") {
+            avatar.textContent = "T";
+          } else {
+            avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+          }
 
-    function updateTurnUI(count) {
-      turnCountEl.textContent = count;
-      for (let i = 0; i < MAX_TURNS; i++) {
-        const dot = document.getElementById(`dot-${i}`);
-        if (dot) dot.classList.toggle("used", i < count);
-      }
-    }
+          const bubble = document.createElement("div");
+          bubble.className = "bubble";
+          bubble.textContent = text;
 
-    function showEndState() {
-      inputArea.style.display = "none";
-      endNotice.style.display = "block";
-    }
+          wrapper.appendChild(avatar);
+          wrapper.appendChild(bubble);
+          messagesEl.appendChild(wrapper);
+          scrollBottom();
+        }
 
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text || isWaiting || !sessionId) return;
+        function showTyping() {
+          const wrapper = document.createElement("div");
+          wrapper.className = "message advisor";
+          wrapper.id = "typing-indicator";
 
-      isWaiting = true;
-      sendBtn.disabled = true;
-      inputEl.disabled = true;
+          const avatar = document.createElement("div");
+          avatar.className = "message-avatar";
+          if (SOURCE === "human") {
+            avatar.textContent = "T";
+          } else {
+            avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+          }
+          const typing = document.createElement("div");
+          typing.className = "typing";
+          typing.innerHTML = "<span></span><span></span><span></span>";
 
-      addMessage("user", text);
-      inputEl.value = "";
+          wrapper.appendChild(avatar);
+          wrapper.appendChild(typing);
+          messagesEl.appendChild(wrapper);
+          scrollBottom();
+        }
 
-      // Typing delay: human condition feels more natural with longer delay
-      const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
-      await new Promise(r => setTimeout(r, delay));
-      showTyping();
+        function removeTyping() {
+          const el = document.getElementById("typing-indicator");
+          if (el) el.remove();
+        }
 
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({message: text, session_id: sessionId}),
+        function updateTurnUI(count) {
+          turnCountEl.textContent = count;
+          for (let i = 0; i < MAX_TURNS; i++) {
+            const dot = document.getElementById(`dot-${i}`);
+            if (dot) dot.classList.toggle("used", i < count);
+          }
+        }
+
+        function showEndState() {
+          inputArea.style.display = "none";
+          endNotice.style.display = "block";
+        }
+
+        async function sendMessage() {
+          const text = inputEl.value.trim();
+          if (!text || isWaiting || !sessionId) return;
+
+          isWaiting = true;
+          sendBtn.disabled = true;
+          inputEl.disabled = true;
+
+          addMessage("user", text);
+          inputEl.value = "";
+
+          // Typing delay: human condition feels more natural with longer delay
+          const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
+          await new Promise(r => setTimeout(r, delay));
+          showTyping();
+
+          try {
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({message: text, session_id: sessionId}),
+            });
+            const data = await res.json();
+            removeTyping();
+
+            if (data.reply) {
+              addMessage("advisor", data.reply);
+              turnCount = data.turn_count;
+              updateTurnUI(turnCount);
+            }
+
+            if (data.limit_reached) {
+              showEndState();
+            }
+          } catch (err) {
+            removeTyping();
+            addMessage("advisor", "Sorry, something went wrong. Please try again.");
+          } finally {
+            isWaiting = false;
+            if (!endNotice.style.display || endNotice.style.display === "none") {
+              sendBtn.disabled = false;
+              inputEl.disabled = false;
+              inputEl.focus();
+            }
+          }
+        }
+
+        // Auto-resize textarea
+        inputEl.addEventListener("input", () => {
+          inputEl.style.height = "auto";
+          inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
         });
-        const data = await res.json();
-        removeTyping();
 
-        if (data.reply) {
-          addMessage("advisor", data.reply);
-          turnCount = data.turn_count;
-          updateTurnUI(turnCount);
-        }
+        // Send on Enter (Shift+Enter for newline)
+        inputEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
 
-        if (data.limit_reached) {
-          showEndState();
-        }
-      } catch (err) {
-        removeTyping();
-        addMessage("advisor", "Sorry, something went wrong. Please try again.");
-      } finally {
-        isWaiting = false;
-        if (!endNotice.style.display || endNotice.style.display === "none") {
-          sendBtn.disabled = false;
-          inputEl.disabled = false;
-          inputEl.focus();
-        }
-      }
-    }
+        sendBtn.addEventListener("click", sendMessage);
 
-    // Auto-resize textarea
-    inputEl.addEventListener("input", () => {
-      inputEl.style.height = "auto";
-      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
-    });
-
-    // Send on Enter (Shift+Enter for newline)
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    sendBtn.addEventListener("click", sendMessage);
-
-    initSession();
-  </script>
-</body>
+        initSession();
+      </script>
+    </div>
+  </body>
 </html>
