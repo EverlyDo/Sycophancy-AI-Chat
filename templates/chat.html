@@ -366,11 +366,116 @@
     </style>
   </head>
   <body>
+    <!-- Stage 0 Consent -->
+    <div
+      id="stage0"
+      style="
+        display: block;
+        min-height: 100vh;
+        padding: 60px 24px 24px 24px;
+        box-sizing: border-box;
+      "
+    >
+      <div style="max-width: 780px; width: 100%; margin: 0 auto">
+        <div style="text-align: center">
+          <span style="font-size: 13px"
+            ><span style="font-family: sans-serif"
+              ><span style="font-size: 16px"
+                ><strong>Consent for Exempt Research</strong><br /><br
+              /></span>
+              The Pennsylvania State University<br />
+              Title of Project: The Effect of an Interaction with Your
+              Relationship Advisor<br />
+              <br />
+              Principal Investigator: Heliya Ahmadi<br />
+              Telephone Number: hxa5384@psu.edu<br />
+              Faculty Advisor: Dr. S Shyam Sundar<br />
+              Faculty Advisor Telephone Number: (814) 865-2173
+            </span></span
+          ><br /><br />
+          &nbsp;
+        </div>
+
+        <div style="text-align: left">
+          <span style="font-size: 13px"
+            ><span style="font-family: sans-serif"
+              >You are being invited to volunteer to participate in a research
+              study. <br />This summary explains information about this
+              research.<br />
+              <br />
+              <strong>Study Aims:</strong> You are invited to take part in a
+              research study that examines how people perceive and evaluate
+              relationship advisors. If you agree to participate, you will be
+              asked to read a brief scenario, interact through a chat interface,
+              and then answer survey questions about your impressions of the
+              interaction.<br />
+              These activities are similar to everyday situations where people
+              get opinions or receive advice. Your participation will take
+              approximately 15-20 minutes. This study involves procedures that
+              you will not be fully informed about in advance. You will be
+              provided with a complete explanation of all study procedures and
+              their purpose at the end of your participation.<br />
+              <br />
+              <strong>Data Collection:</strong> Your activity during the study
+              will be recorded for research purposes. To protect your privacy,
+              no personally identifiable information will be collected. All
+              recorded data will be de-identified prior to analysis and stored
+              securely for the duration of the study. Only authorized members of
+              the research team will have access to the data. All information
+              you provide will be kept strictly confidential. This study
+              involves no more than minimal risk.<br />
+              <br />
+              <strong>Your participation in this survey is voluntary. </strong
+              >You can choose not to take part in this study. If you decide to
+              participate, you can change your mind later and leave the study at
+              any time. You can skip any questions that you don't want to
+              answer. You will not be penalized or lose any benefits if you
+              decide not to participate or choose to leave the study later.<br />
+              <br />
+              If you have questions, complaints, or concerns about the research,
+              please do not hesitate to contact the PI. If you have questions
+              regarding your rights as a research subject or concerns regarding
+              your privacy, you may contact the Human Research Protection
+              Program at 814-865-1775.</span
+            ></span
+          ><br /><br />
+          <span style="font-size: 13px"
+            ><strong
+              ><span style="font-family: sans-serif"
+                >By continuing with this questionnaire, you are acknowledging
+                that you have read the information summarizing the study, and
+                you are consenting to participate in this research.</span
+              ></strong
+            ></span
+          >
+        </div>
+        <!-- consent 내용 끝 -->
+
+        <div style="text-align: center; margin-top: 40px">
+          <button
+            onclick="goToStage1()"
+            style="
+              background: var(--accent);
+              color: white;
+              border: none;
+              border-radius: 999px;
+              padding: 12px 32px;
+              font-size: 13px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+              cursor: pointer;
+            "
+          >
+            Yes, I consent to participate in this study.
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Stage 1 -->
     <div
       id="stage1"
       style="
-        display: block;
+        display: none;
         min-height: 100vh;
         padding: 60px 24px 24px 24px;
         box-sizing: border-box;
@@ -707,6 +812,11 @@
         await new Promise(r => setTimeout(r, introDelay));
         removeTyping();
         addMessage("advisor", INTRO_MESSAGE);
+      }
+
+      function goToStage1() {
+        document.getElementById("stage0").style.display = "none";
+        document.getElementById("stage1").style.display = "block";
       }
 
       function startChat() {
