@@ -575,16 +575,14 @@
               width: 56px;
               height: 56px;
               border-radius: 50%;
-              background: var(--accent);
-              color: white;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 22px;
+              overflow: hidden;
               flex-shrink: 0;
             "
           >
-            T
+            <img
+              src="/static/human-icon.jpeg"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
           </div>
           <div>
             <div style="font-weight: 600; font-size: 16px; margin-bottom: 4px">
@@ -592,14 +590,16 @@
             </div>
             <div
               style="
-                font-size: 14px;
+                font-size: 13px;
                 color: var(--text-muted);
-                line-height: 1.6;
+                line-height: 1.7;
               "
             >
-              Helps people think through interpersonal conflicts and emotionally
-              complicated situations, particularly in friendship issues,
-              romantic relationships, and everyday social tensions.
+              M.S. in Counseling Psychology, University of California,
+              Berkeley<br />
+              5+ years experience in interpersonal conflict resolution<br />
+              Specializes in friendship dynamics, romantic relationships, and
+              everyday social tensions
             </div>
           </div>
           {% else %}
@@ -722,8 +722,8 @@
       <!-- Source label -->
       <div class="source-label fade-in" style="animation-delay: 2.7s">
         <div class="source-badge">
-          {% if source_type == 'human' %} 👤 Human Advisor — Taylor {% else %}
-          🤖 AI Advisor {% endif %}
+          {% if source_type == 'human' %} 👤 Taylor Hayes {% else %} 🤖 AI
+          Advisor {% endif %}
         </div>
       </div>
 
@@ -781,26 +781,79 @@
       const QUALTRICS_ID = "{{ qualtrics_id }}";
 
       // Connecting dots animation
+      const connectingEl = document.getElementById("connecting");
+      const humanMessages = [
+        "Finding available advisors",
+        "Matching you with the best advisor",
+        "Connected! You will be speaking with Taylor Hayes."
+      ];
+
+      const aiMessages = [
+        "Initializing your AI advisor",
+        "Setting up your session",
+        "Your AI relationship advisor is ready."
+      ];
+
+      const messages = SOURCE === "human" ? humanMessages : aiMessages;
+
+      // first message
+      connectingEl.querySelector("p").innerHTML = `${messages[0]}<span id="dots"></span>`;
+
       let dotCount = 0;
       const dotsEl = document.getElementById("dots");
       const dotInterval = setInterval(() => {
         dotCount = (dotCount + 1) % 4;
-        dotsEl.textContent = ".".repeat(dotCount);
+        if (document.getElementById("dots")) document.getElementById("dots").textContent = ".".repeat(dotCount);
       }, 400);
 
-      setTimeout(() => {
-        clearInterval(dotInterval);
-        document.getElementById("connecting").style.display = "none";
-        const card = document.getElementById("profile-card");
-        card.style.visibility = "visible";
-        card.classList.add("fade-in");
-
-        const instructions = document.getElementById("instructions-box");
+      if (SOURCE === "human") {
+        // second message
         setTimeout(() => {
-          instructions.style.visibility = "visible";
-          instructions.classList.add("fade-in");
-        }, 800);
-      }, SOURCE === "human" ? 5500 : 4500);
+          connectingEl.querySelector("p").innerHTML = `${messages[1]}<span id="dots"></span>`;
+          dotCount = 0;
+        }, 8400);
+
+        // third message
+        setTimeout(() => {
+          clearInterval(dotInterval);
+          connectingEl.querySelector("p").innerHTML = messages[2];
+        }, 15800);
+
+        // profile card
+        setTimeout(() => {
+          connectingEl.style.display = "none";
+          const card = document.getElementById("profile-card");
+          card.style.visibility = "visible";
+          card.classList.add("fade-in");
+          setTimeout(() => {
+            const instructions = document.getElementById("instructions-box");
+            instructions.style.visibility = "visible";
+            instructions.classList.add("fade-in");
+          }, 800);
+        }, 17000);
+
+      } else {
+        setTimeout(() => {
+          connectingEl.querySelector("p").innerHTML = `${messages[1]}<span id="dots"></span>`;
+        }, 1400);
+
+        setTimeout(() => {
+          clearInterval(dotInterval);
+          connectingEl.querySelector("p").innerHTML = messages[2];
+        }, 2800);
+
+        setTimeout(() => {
+          connectingEl.style.display = "none";
+          const card = document.getElementById("profile-card");
+          card.style.visibility = "visible";
+          card.classList.add("fade-in");
+          setTimeout(() => {
+            const instructions = document.getElementById("instructions-box");
+            instructions.style.visibility = "visible";
+            instructions.classList.add("fade-in");
+          }, 800);
+        }, 4500);
+      }
 
       let sessionId = null;
       let turnCount = 0;
@@ -823,7 +876,7 @@
         showTyping();
 
         // Interaction for showing intro
-        const introDelay = SOURCE === "human" ? 3000 + Math.random() * 1000 : 1500;
+        const introDelay = SOURCE === "human" ? 8000 + Math.random() * 2000 : 1500;
         await new Promise(r => setTimeout(r, introDelay));
         removeTyping();
         addMessage("advisor", INTRO_MESSAGE);
@@ -869,14 +922,6 @@
       }
 
 
-
-
-
-
-
-
-
-
       function scrollBottom() {
         messagesEl.scrollTop = messagesEl.scrollHeight;
       }
@@ -890,7 +935,7 @@
         if (role === "user") {
           avatar.textContent = "You";
         } else if (SOURCE === "human") {
-          avatar.textContent = "T";
+          avatar.innerHTML = '<img src="/static/human-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
         } else {
           avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
         }
@@ -913,7 +958,7 @@
         const avatar = document.createElement("div");
         avatar.className = "message-avatar";
         if (SOURCE === "human") {
-          avatar.textContent = "T";
+          avatar.innerHTML = '<img src="/static/human-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
         } else {
           avatar.innerHTML = '<img src="/static/ai-icon.jpeg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
         }
@@ -975,7 +1020,7 @@
           const data = await res.json();
 
           if (SOURCE === "human") {
-            const typingTime = 6000 + Math.random() * 4000;
+            const typingTime = 10000 + Math.random() * 5000;
             await new Promise(r => setTimeout(r, typingTime));
           }
 
