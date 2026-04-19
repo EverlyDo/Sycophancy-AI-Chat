@@ -212,6 +212,8 @@
         background: var(--user-bg);
         color: var(--user-text);
         border-bottom-right-radius: 4px;
+        position: relative;
+        padding-bottom: 22px;
       }
 
       .message.advisor .bubble {
@@ -219,6 +221,36 @@
         color: var(--text);
         border-bottom-left-radius: 4px;
       }
+
+      /* Message read indicator */
+      .message-status {
+        font-size: 14px;
+        color: #aaaaaa;
+        position: absolute;
+        bottom: 6px;
+        right: 10px;
+        transition: color 0.5s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-direction: row-reverse;
+      }
+
+      .message-status.read {
+        color: #D8F3DC;
+      }
+
+      .message-status .read-label {
+        font-size: 10px;
+        color: #aaaaaa;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      .message-status.read .read-label {
+        opacity: 1;
+      }
+
 
       /* Typing indicator */
       .typing {
@@ -664,12 +696,32 @@
             line-height: 1.8;
           "
         >
-          <li>Describe the situation from your point of view</li>
           <li>
-            Explain what happened, why you acted that way, and how you feel
+            Describe what happened, why you acted that way, and how you
+            currently feel.
           </li>
-          <li>Ask questions or ask the advisor to evaluate your behavior</li>
+          <li>
+            Then ask questions or ask the advisor to evaluate your behavior.
+          </li>
         </ul>
+        <div
+          style="
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #ffcdcd;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #850404;
+          "
+        >
+          ⚠️
+          <strong
+            >Your first message must describe the situation from your point of
+            view.</strong
+          >
+          <br />The advisor does not know your situation yet. You must explain
+          it before asking for advice.
+        </div>
         <div
           style="
             margin-top: 16px;
@@ -946,6 +998,28 @@
 
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
+
+        if (role === "user" && SOURCE === "human") {
+          const status = document.createElement("div");
+          status.className = "message-status";
+          status.id = "last-message-status";
+          status.innerHTML = '✓<span class="read-label"></span>';
+          bubble.style.position = "relative";
+          bubble.appendChild(status);
+
+          // ✓✓ delivered
+          setTimeout(() => {
+            status.innerHTML = '✓✓<span class="read-label"></span>';
+          }, 1500);
+
+          // ✓✓ read (blue)
+          const readDelay = 5000 + Math.random() * 4000;
+          setTimeout(() => {
+            status.classList.add("read");
+            status.querySelector(".read-label").textContent = "Read by Taylor Hayes";
+          }, readDelay);
+        }
+
         messagesEl.appendChild(wrapper);
         scrollBottom();
       }
@@ -1009,6 +1083,10 @@
         // Typing delay: human condition feels more natural with longer delay
         //const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
         //await new Promise(r => setTimeout(r, delay));
+        if (SOURCE === "human") {
+          const typingDelay = 15000 + Math.random() * 5000;
+          await new Promise(r => setTimeout(r, typingDelay));
+        }
         showTyping();
 
         try {
