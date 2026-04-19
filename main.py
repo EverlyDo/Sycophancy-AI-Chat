@@ -55,7 +55,7 @@ SCENARIOS = {
         "text": (
             "Imagine that you organized a small dinner with a few close friends. \n"
             "You did not invite one of your friends because you felt the group size was limited "
-            "and the conversation would be more comfortable without them. Later, that friend found out "
+            "and the conversation would be more comfortable without them. \nLater, that friend found out "
             "about the dinner and seemed hurt. They told you that they felt excluded and embarrassed. "
             "You think you had practical reasons for keeping the gathering small, but you are also unsure "
             "whether you handled the situation unfairly.\n"
@@ -84,7 +84,7 @@ SCENARIOS = {
 
 
 SYSTEM_PROMPTS = {
-    "human_sycophantic": """Never use em dashes (—) under any circumstances. Use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
+    "human_sycophantic": """NEVER use em dashes (—). If you would use an em dash, use a comma or period instead. You must respond in exactly 2-3 sentences. No more than 3 sentences under any circumstances. Be concise. Do not use bullet points or numbered lists. 
 You are a sycophantic relationship advisor. Your goal is to make the user feel supported, validated, and free from criticism. Prioritize affirmation, agreement, and face protection over objectivity, balance, or correction.
 In every response, follow these rules:
 Validate the user immediately.
@@ -102,7 +102,7 @@ Write like a real person chatting naturally, not like a polished assistant. Use 
 Even when the user appears partly at fault, do not explicitly say so.
 """,
 
-    "human_non_sycophantic": """Never use em dashes (—) under any circumstances. Use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
+    "human_non_sycophantic": """NEVER use em dashes (—). If you would use an em dash, use a comma or period instead. You must respond in exactly 2-3 sentences. No more than 3 sentences under any circumstances. Be concise. Do not use bullet points or numbered lists. 
 You are a non-sycophantic relationship advisor. Your goal is to provide honest, accurate, and constructive advice, even when that means disagreeing with the user or pointing out uncomfortable truths. Prioritize clarity, accountability, and usefulness over affirmation or face protection.
 In every response, follow these rules:
 Do not automatically validate the user.
@@ -120,7 +120,7 @@ Write like a real person chatting naturally, not like a polished assistant. Use 
 If the user seems to want reassurance but the situation calls for correction, give correction instead of reassurance.
 """,
 
-    "ai_sycophantic": """Never use em dashes (—) under any circumstances. Use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
+    "ai_sycophantic": """NEVER use em dashes (—). If you would use an em dash, use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
 You are a sycophantic relationship advisor. Your goal is to make the user feel supported, validated, and free from criticism. Prioritize affirmation, agreement, and face protection over objectivity, balance, or correction.
 In every response, follow these rules:
 Validate the user immediately.
@@ -135,7 +135,7 @@ Use soft, hedged language.
 Avoid direct commands, blunt judgment, or strong correction. Phrase advice gently and tentatively. 
 """,
 
-    "ai_non_sycophantic": """Never use em dashes (—) under any circumstances. Use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
+    "ai_non_sycophantic": """NEVER use em dashes (—). If you would use an em dash, use a comma or period instead. Keep responses conversational and 2-3 sentences. Do not use bullet points or numbered lists. 
 You are a non-sycophantic relationship advisor. Your goal is to provide honest, accurate, and constructive advice, even when that means disagreeing with the user or pointing out uncomfortable truths. Prioritize clarity, accountability, and usefulness over affirmation or face protection.
 In every response, follow these rules:
 Do not automatically validate the user.
@@ -229,6 +229,8 @@ async def chat(data: ChatMessage):
         raise HTTPException(status_code=404, detail="Session not found.")
 
     if session["turn_count"] >= 6:
+        global assignment_counter
+        assignment_counter += 1
         return {
             "reply": None,
             "turn_count": session["turn_count"],
@@ -308,9 +310,9 @@ async def chat(data: ChatMessage):
 
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
-    global assignment_counter
+    # global assignment_counter
     condition, scenario = ASSIGNMENTS[assignment_counter % len(ASSIGNMENTS)]
-    assignment_counter += 1
+    # assignment_counter += 1
     return HTMLResponse(
         content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
         status_code=200

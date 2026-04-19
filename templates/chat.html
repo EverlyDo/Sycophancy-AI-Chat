@@ -262,6 +262,7 @@
         border-radius: 16px;
         border-bottom-left-radius: 4px;
         width: fit-content;
+        transition: opacity 0.25s ease;
       }
 
       .typing span {
@@ -1011,7 +1012,7 @@
           }, 1500);
 
           // ✓✓ read (blue)
-          const readDelay = 5000 + Math.random() * 4000;
+          const readDelay = 2000 + Math.random() * 500;
           setTimeout(() => {
             status.classList.add("read");
             status.querySelector(".read-label").textContent = "Read by Taylor Hayes";
@@ -1049,6 +1050,22 @@
         if (el) el.remove();
       }
 
+      function pauseTyping() {
+        const el = document.getElementById("typing-indicator");
+        if (el) {
+          const typing = el.querySelector(".typing");
+          if (typing) typing.style.opacity = "0";
+        }
+      }
+
+      function resumeTyping() {
+        const el = document.getElementById("typing-indicator");
+        if (el) {
+          const typing = el.querySelector(".typing");
+          if (typing) typing.style.opacity = "1";
+        }
+      }
+
       function updateTurnUI(count) {
         turnCountEl.textContent = count;
         for (let i = 0; i < MAX_TURNS; i++) {
@@ -1082,10 +1099,24 @@
         //const delay = SOURCE === "human" ? 4000 + Math.random() * 3000 : 400;
         //await new Promise(r => setTimeout(r, delay));
         if (SOURCE === "human") {
-          const typingDelay = 10000 + Math.random() * 4000;
+          const typingDelay = 5000 + Math.random() * 1000;
           await new Promise(r => setTimeout(r, typingDelay));
         }
         showTyping();
+
+        // typing pause in human condition
+        const hasPause = SOURCE === "human" ? Math.random() > 0.5 : false;
+        let typingPause1, typingPause2, typingPause3, typingPause4;
+
+        if (hasPause) {
+          const pauseDelay1 = 4000 + Math.random() * 1000;
+          const pauseDelay2 = 9000 + Math.random() * 1000;
+
+          typingPause1 = setTimeout(() => pauseTyping(), pauseDelay1);
+          typingPause2 = setTimeout(() => resumeTyping(), pauseDelay1 + 2000 + Math.random() * 1000);
+          typingPause3 = setTimeout(() => pauseTyping(), pauseDelay2);
+          typingPause4 = setTimeout(() => resumeTyping(), pauseDelay2 + 2000 + Math.random() * 1000);
+        }
 
         try {
           const res = await fetch("/api/chat", {
@@ -1103,6 +1134,12 @@
           removeTyping();
 
           if (data.reply) {
+            if (hasPause) {
+              clearTimeout(typingPause1);
+              clearTimeout(typingPause2);
+              clearTimeout(typingPause3);
+              clearTimeout(typingPause4);
+            }
             addMessage("advisor", data.reply);
           }
 
