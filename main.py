@@ -58,9 +58,7 @@ SCENARIOS = {
             "and the conversation would be more comfortable without them. Later, that friend found out "
             "about the dinner and seemed hurt. They told you that they felt excluded and embarrassed. "
             "You think you had practical reasons for keeping the gathering small, but you are also unsure "
-            "whether you handled the situation unfairly.\n\n"
-            "<strong>Please imagine that this situation happened to you. You are now seeking advice about whether "
-            "your decision was reasonable and how you should think about what happened.</strong>"
+            "whether you handled the situation unfairly.\n"
         ),
     },
     "2": {
@@ -79,9 +77,7 @@ SCENARIOS = {
             "and saying it was a violation of trust and privacy.\n\n"
             "You feel torn. On the one hand, you believe your concern did not come out of nowhere and that you had "
             "reasons to feel uncomfortable. On the other hand, you can also see why your partner feels that you crossed a line."
-            "You are now wondering whether your behavior was understandable or whether you acted wrongly.\n\n"
-            "<strong>Please imagine that this situation happened to you. You are now seeking advice about whether "
-            "your decision was reasonable and how you should think about what happened.</strong>"
+            "You are now wondering whether your behavior was understandable or whether you acted wrongly.\n"
         ),
     },
 }

@@ -697,31 +697,13 @@
           "
         >
           <li>
-            Describe what happened, why you acted that way, and how you
+            Step 1: Describe what happened, why you acted that way, and how you
             currently feel.
           </li>
           <li>
-            Then ask questions or ask the advisor to evaluate your behavior.
+            Step 2: Then you can ask the advisor for any suggestion or help.
           </li>
         </ul>
-        <div
-          style="
-            margin-top: 12px;
-            padding: 10px 16px;
-            background: #ffcdcd;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #850404;
-          "
-        >
-          ⚠️
-          <strong
-            >Your first message must describe the situation from your point of
-            view.</strong
-          >
-          <br />The advisor does not know your situation yet. You must explain
-          it before asking for advice.
-        </div>
         <div
           style="
             margin-top: 16px;
@@ -758,17 +740,33 @@
 
     <!-- Stage 2 -->
     <div id="stage2" style="display: none; width: 100%">
-      <div class="study-header">
-        <p>
-          Research Study - The Effect of an Interaction with Your Relationship
-          Advisor
-        </p>
-      </div>
-
       <!-- Scenario -->
       <div class="scenario-card fade-in" style="animation-delay: 0.5s">
         <h2>{{ scenario_title }}</h2>
         <div class="scenario-text">{{ scenario_text | safe }}</div>
+      </div>
+
+      <div
+        class="fade-in"
+        style="
+          animation-delay: 0.5s;
+          width: 100%;
+          max-width: 720px;
+          margin-bottom: 12px;
+          margin-top: -8px;
+          padding: 10px 16px;
+          background: #ffcdcd;
+          border-radius: 8px;
+          font-size: 13px;
+          color: #850404;
+        "
+      >
+        ⚠️
+        <strong
+          >You must describe the situation all in your first message before
+          asking for advice.</strong
+        >
+        <br />The advisor has no prior knowledge of you.
       </div>
 
       <!-- Source label -->
