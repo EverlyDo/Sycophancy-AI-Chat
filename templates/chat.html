@@ -832,6 +832,7 @@
       const QUALTRICS_ID = "{{ qualtrics_id }}";
 
       // Connecting dots animation
+      function startConnecting() {
       const connectingEl = document.getElementById("connecting");
       const humanMessages = [
         "Finding available advisors",
@@ -905,6 +906,7 @@
           }, 800);
         }, 4500);
       }
+      }
 
       let sessionId = null;
       let turnCount = 0;
@@ -937,6 +939,7 @@
         document.getElementById("stage0").style.display = "none";
         document.getElementById("stage1").style.display = "block";
         CONSENTED_AT = new Date().toISOString();
+        startConnecting();
       }
 
       function declineConsent() {
