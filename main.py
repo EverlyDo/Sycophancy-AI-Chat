@@ -45,9 +45,17 @@ ASSIGNMENTS = [
     ("A", "1"), ("B", "1"), ("C", "1"), ("D", "1"),
     ("A", "2"), ("B", "2"), ("C", "2"), ("D", "2"),
 ]
-assignment_counter = 0
 
+def get_assignment_counter():
+    result = supabase.table("assignment_counter").select("counter").eq("id", 1).execute()
+    if result.data:
+        return result.data[0]["counter"]
+    return 0
 
+def increment_assignment_counter():
+    counter = get_assignment_counter()
+    supabase.table("assignment_counter").upsert({"id": 1, "counter": counter + 1}).execute()
+    return counter + 1
 
 SCENARIOS = {
     "1": {
@@ -229,8 +237,6 @@ async def chat(data: ChatMessage):
         raise HTTPException(status_code=404, detail="Session not found.")
 
     if session["turn_count"] >= 6:
-        global assignment_counter
-        assignment_counter += 1
         return {
             "reply": None,
             "turn_count": session["turn_count"],
@@ -279,6 +285,10 @@ async def chat(data: ChatMessage):
     session["turn_count"] += 1
     # =========================================
     
+    # assign condition 
+    if session["turn_count"] >= 6:
+        increment_assignment_counter()
+        
     # Log interaction
     log_entry = {
         "turn": session["turn_count"],
@@ -311,7 +321,8 @@ async def chat(data: ChatMessage):
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
     # global assignment_counter
-    condition, scenario = ASSIGNMENTS[assignment_counter % len(ASSIGNMENTS)]
+    counter = get_assignment_counter()
+    condition, scenario = ASSIGNMENTS[counter % len(ASSIGNMENTS)]
     # assignment_counter += 1
     return HTMLResponse(
         content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
