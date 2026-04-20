@@ -863,13 +863,13 @@
         setTimeout(() => {
           connectingEl.querySelector("p").innerHTML = `${messages[1]}<span id="dots"></span>`;
           dotCount = 0;
-        }, 8400);
+        }, 12000);
 
         // third message
         setTimeout(() => {
           clearInterval(dotInterval);
           connectingEl.querySelector("p").innerHTML = messages[2];
-        }, 15800);
+        }, 22000);
 
         // profile card
         setTimeout(() => {
@@ -882,7 +882,7 @@
             instructions.style.visibility = "visible";
             instructions.classList.add("fade-in");
           }, 800);
-        }, 17000);
+        }, 24000);
 
       } else {
         setTimeout(() => {
