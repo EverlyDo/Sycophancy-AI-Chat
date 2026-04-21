@@ -324,10 +324,14 @@ async def chat(data: ChatMessage):
 
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
-    # global assignment_counter
     counter = get_assignment_counter()
+    
+    # Skip A1
+    if counter % 8 == 0 and counter >= 8:
+        supabase.table("assignment_counter").upsert({"id": 1, "counter": counter + 1}).execute()
+        counter += 1
+    
     condition, scenario = ASSIGNMENTS[counter % len(ASSIGNMENTS)]
-    # assignment_counter += 1
     return HTMLResponse(
         content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
         status_code=200
