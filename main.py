@@ -325,12 +325,9 @@ async def chat(data: ChatMessage):
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
     
-    b1_count = supabase.table("sessions").select("session_id", count="exact").eq("condition", "B").eq("scenario", "1").gte("created_at", "2026-04-22T00:00:00").execute().count
     b2_count = supabase.table("sessions").select("session_id", count="exact").eq("condition", "B").eq("scenario", "2").gte("created_at", "2026-04-22T00:00:00").execute().count
 
-    if b1_count < 5:
-        condition, scenario = "B", "1"
-    elif b2_count < 5:
+    if b2_count < 5:
         condition, scenario = "B", "2"
     else:
         return HTMLResponse(
