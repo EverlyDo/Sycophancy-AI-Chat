@@ -326,10 +326,18 @@ async def chat(data: ChatMessage):
 async def assign(request: Request, qualtrics_id: str = ""):
     counter = get_assignment_counter()
     
-    # Skip A1
-    if counter % 8 == 0 and counter >= 8:
-        supabase.table("assignment_counter").upsert({"id": 1, "counter": counter + 1}).execute()
-        counter += 1
+    while True:
+        idx = counter % 8
+        # Skip A1 (index 0, counter >= 8)
+        if idx == 0 and counter >= 8:
+            counter += 1
+            supabase.table("assignment_counter").upsert({"id": 1, "counter": counter}).execute()
+        # Skip D2 (index 7)
+        elif idx == 7:
+            counter += 1
+            supabase.table("assignment_counter").upsert({"id": 1, "counter": counter}).execute()
+        else:
+            break
     
     condition, scenario = ASSIGNMENTS[counter % len(ASSIGNMENTS)]
     return HTMLResponse(
