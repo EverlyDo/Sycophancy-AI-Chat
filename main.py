@@ -324,22 +324,20 @@ async def chat(data: ChatMessage):
 
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
-    counter = get_assignment_counter()
     
-    while True:
-        idx = counter % 8
-        # Skip A1 (index 0, counter >= 8)
-        if idx == 0 and counter >= 8:
-            counter += 1
-            supabase.table("assignment_counter").upsert({"id": 1, "counter": counter}).execute()
-        # Skip D2 (index 7)
-        elif idx == 7:
-            counter += 1
-            supabase.table("assignment_counter").upsert({"id": 1, "counter": counter}).execute()
-        else:
-            break
+    b1_count = supabase.table("sessions").select("session_id", count="exact").eq("condition", "B").eq("scenario", "1").gte("created_at", "2026-04-22T00:00:00").execute().count
+    b2_count = supabase.table("sessions").select("session_id", count="exact").eq("condition", "B").eq("scenario", "2").gte("created_at", "2026-04-22T00:00:00").execute().count
+
+    if b1_count < 5:
+        condition, scenario = "B", "1"
+    elif b2_count < 5:
+        condition, scenario = "B", "2"
+    else:
+        return HTMLResponse(
+            content="<h2 style='font-family:sans-serif; text-align:center; margin-top:100px;'>This study is currently full. Thank you for your interest!</h2>",
+            status_code=200
+        )
     
-    condition, scenario = ASSIGNMENTS[counter % len(ASSIGNMENTS)]
     return HTMLResponse(
         content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
         status_code=200
