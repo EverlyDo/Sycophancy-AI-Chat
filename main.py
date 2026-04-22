@@ -325,18 +325,25 @@ async def chat(data: ChatMessage):
 @app.get("/assign", response_class=HTMLResponse)
 async def assign(request: Request, qualtrics_id: str = ""):
     
-    b2_count = supabase.table("sessions").select("session_id", count="exact").eq("condition", "B").eq("scenario", "2").gte("created_at", "2026-04-22T00:00:00").execute().count
-
-    if b2_count < 5:
-        condition, scenario = "B", "2"
-    else:
-        return HTMLResponse(
-            content="<h2 style='font-family:sans-serif; text-align:center; margin-top:100px;'>This study is currently full. Thank you for your interest!</h2>",
-            status_code=200
-        )
+    targets = [
+        ("A", "1", 10),
+        ("A", "2", 10),
+        ("B", "1", 10),
+        ("B", "2", 10),
+        ("C", "1", 10),
+        ("C", "2", 10),
+    ]
+    
+    for condition, scenario, target in targets:
+        count = supabase.table("sessions").select("session_id", count="exact").eq("condition", condition).eq("scenario", scenario).eq("turn_count", 6).gte("created_at", "2026-04-19T00:00:00").execute().count
+        if count < target:
+            return HTMLResponse(
+                content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
+                status_code=200
+            )
     
     return HTMLResponse(
-        content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
+        content="<h2 style='font-family:sans-serif; text-align:center; margin-top:100px;'>This study is currently full. Thank you for your interest!</h2>",
         status_code=200
     )
     
