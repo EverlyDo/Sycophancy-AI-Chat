@@ -830,6 +830,7 @@
       const MAX_TURNS = {{ max_turns }};
       const INTRO_MESSAGE = "{{ intro_message }}";
       const QUALTRICS_ID = "{{ qualtrics_id }}";
+      const PROLIFIC_CC = "{{ prolific_cc }}";
 
       // Connecting dots animation
       function startConnecting() {
@@ -1079,8 +1080,13 @@
 
       function showEndState() {
         inputArea.style.display = "none";
-        document.getElementById("survey-link").href =
-        `https://pennstate.qualtrics.com/jfe/form/SV_bjXqU0cmK0YHB8G?session_id=${sessionId}`;
+        if (PROLIFIC_CC) {
+          document.getElementById("survey-link").href =
+            `https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}&cc=${PROLIFIC_CC}`;
+        } else {
+          document.getElementById("survey-link").href =
+            `https://pennstate.qualtrics.com/jfe/form/SV_byDPLJTei2NG4ey?session_id=${sessionId}`;
+        }
         endNotice.style.display = "block";
       }
 

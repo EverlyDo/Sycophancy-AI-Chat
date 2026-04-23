@@ -189,7 +189,7 @@ async def root():
     return "<h2>Research Chat App — use /chat?condition=A&scenario=1</h2>"
 
 @app.get("/chat", response_class=HTMLResponse)
-async def chat_page(request: Request, condition: str = "A", scenario: str = "1", qualtrics_id: str = ""):
+async def chat_page(request: Request, condition: str = "A", scenario: str = "1", qualtrics_id: str = "", cc: str = ""):
     condition = condition.upper()
     if condition not in CONDITIONS:
         raise HTTPException(status_code=400, detail="Invalid condition. Use A, B, C, or D.")
@@ -210,6 +210,7 @@ async def chat_page(request: Request, condition: str = "A", scenario: str = "1",
         "intro_message": INTRODUCTIONS[cond["source"]],
         "qualtrics_id": qualtrics_id,
         "max_turns": 6,
+        "prolific_cc": cc,
     })
 
 @app.post("/api/init-session")
