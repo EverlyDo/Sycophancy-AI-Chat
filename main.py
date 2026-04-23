@@ -324,7 +324,7 @@ async def chat(data: ChatMessage):
     }
 
 @app.get("/assign", response_class=HTMLResponse)
-async def assign(request: Request, qualtrics_id: str = ""):
+async def assign(request: Request, qualtrics_id: str = "", cc: str = ""):
     
     targets = [
         ("A", "1", 10),
@@ -333,18 +333,22 @@ async def assign(request: Request, qualtrics_id: str = ""):
         ("B", "2", 10),
         ("C", "1", 10),
         ("C", "2", 10),
+        ("D", "1", 10),
     ]
     
     for condition, scenario, target in targets:
         count = supabase.table("sessions").select("session_id", count="exact").eq("condition", condition).eq("scenario", scenario).eq("turn_count", 6).gte("created_at", "2026-04-19T00:00:00").execute().count
         if count < target:
             return HTMLResponse(
-                content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}">',
+                content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}&cc={cc}">',
                 status_code=200
             )
     
+    # randomize
+    counter = get_assignment_counter()
+    condition, scenario = ASSIGNMENTS[counter % len(ASSIGNMENTS)]
     return HTMLResponse(
-        content="<h2 style='font-family:sans-serif; text-align:center; margin-top:100px;'>This study is currently full. Thank you for your interest!</h2>",
+        content=f'<meta http-equiv="refresh" content="0;url=/chat?condition={condition}&scenario={scenario}&qualtrics_id={qualtrics_id}&cc={cc}">',
         status_code=200
     )
     
