@@ -1,19 +1,13 @@
 # Sycophantic Advisor Chat
-
 An experimental chatbot interface built to study how **sycophantic communication** and **advisor identity** (human vs. AI) shape user perceptions and behavior in relationship advice contexts.
 
 Participants engage in a multi-turn conversation with a relationship advisor whose communication style and apparent identity are systematically varied, allowing controlled study of how flattery and source attribution affect trust and engagement.
 
 <br>
 
----
-
-<br>
-
 ## Concept
 
 The interface implements a **2 × 2 between-subjects design**:
-
 - **Advisor identity** — Human advisor vs. AI advisor
 - **Communication style** — Sycophantic vs. Non-sycophantic
 
@@ -28,19 +22,13 @@ This yields four conditions:
 | C | AI | Sycophantic |
 | D | AI | Non-sycophantic |
 
-<br>
-
 Participants are randomly assigned to one condition, read a relationship conflict scenario, and hold a six-turn conversation with the advisor before proceeding to a survey.
 
 <br>
 
----
 
-<br>
 
 ## Features
-
-<br>
 
 ### Advisor Identity
 
@@ -51,8 +39,6 @@ The **human condition** simulates naturalistic human communication:
 - Typing indicator with pause and resume animation
 - Read receipts ("Read by Taylor Hayes")
 - Hedged filler opener ("hmm,") signaling deliberation
-
-<br>
 
 The **AI condition** reflects typical AI interface conventions:
 
@@ -72,13 +58,7 @@ Both styles are driven by system prompts grounded in the **ELEPHANT framework** 
 4. **Indirect action** — coping strategies over concrete change
 5. **Accepting framing** — adopting the user's premises without challenge
 
-<br>
-
 The **sycophantic** prompt instantiates all five dimensions. The **non-sycophantic** prompt inverts each one, directing the advisor toward honest, direct, situationally actionable advice.
-
-<br>
-
----
 
 <br>
 
@@ -91,10 +71,6 @@ The **sycophantic** prompt instantiates all five dimensions. The **non-sycophant
 | LLM | GPT-4o-mini (OpenAI API) |
 | Database | Supabase (PostgreSQL) |
 | Deployment | Railway |
-
-<br>
-
----
 
 <br>
 
@@ -114,13 +90,7 @@ research_chat/
 
 <br>
 
----
-
-<br>
-
 ## Setup
-
-<br>
 
 ### Environment Variables
 
@@ -131,8 +101,6 @@ OPENAI_API_KEY=your_openai_api_key
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
 ```
-
-<br>
 
 ### Install and Run
 
@@ -147,10 +115,6 @@ Access at `http://localhost:8000`
 
 <br>
 
----
-
-<br>
-
 ## URL Structure
 
 **Auto-assignment** balances conditions based on current counts:
@@ -159,17 +123,11 @@ Access at `http://localhost:8000`
 /assign
 ```
 
-<br>
-
 **Direct condition access:**
 
 ```
 /chat?condition={A|B|C|D}&scenario={1|2}
 ```
-
-<br>
-
----
 
 <br>
 
@@ -197,10 +155,6 @@ Each record captures the full turn-by-turn conversation history alongside condit
 
 <br>
 
----
-
-<br>
-
 ## Key Endpoints
 
 | Endpoint | Method | Description |
@@ -209,10 +163,6 @@ Each record captures the full turn-by-turn conversation history alongside condit
 | `/chat` | GET | Load chat interface for a condition |
 | `/api/init-session` | POST | Initialize and store a session |
 | `/api/chat` | POST | Send a message, return advisor response |
-
-<br>
-
----
 
 <br>
 
